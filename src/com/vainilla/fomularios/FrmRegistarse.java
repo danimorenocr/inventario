@@ -6,9 +6,9 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-public class FrmLogin extends javax.swing.JInternalFrame {
+public class FrmRegistarse extends javax.swing.JInternalFrame {
 
-    public FrmLogin() {
+    public FrmRegistarse() {
         initComponents();
         apariencia();
     }
@@ -115,7 +115,7 @@ public class FrmLogin extends javax.swing.JInternalFrame {
         panelRedondeado2.setBounds(520, 80, 560, 570);
 
         btnRegis.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 182, 193), 3, true));
-        btnRegis.setText("Iniciar Sesión");
+        btnRegis.setText("Registrarse");
         btnRegis.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
         btnRegis.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -138,15 +138,16 @@ public class FrmLogin extends javax.swing.JInternalFrame {
             String nombre = cajaNombre.getText();
             String contra = cajaContra.getText();
 
-            DaoLogin miDao = new DaoLogin();
-            Login objUsuario = miDao.buscar(nombre);
-            System.out.println("user: " + miDao.buscar(nombre));
+            Login objUsuario = new Login(nombre, contra);
 
-            if (objUsuario == null) {
-                JOptionPane.showMessageDialog(panelCuerpo, "No se encontró el usuario", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            DaoLogin miDao = new DaoLogin();
+
+            if (miDao.registrar(objUsuario)) {
+                JOptionPane.showMessageDialog(panelCuerpo, "Registro Exitoso", "Información", JOptionPane.INFORMATION_MESSAGE);
+                borrarDatos();
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(panelCuerpo, "No se pudo registrar", "Error", JOptionPane.ERROR_MESSAGE);
-
             }
 
         }

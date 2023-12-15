@@ -157,7 +157,7 @@
                 </LineBorder>
               </Border>
             </Property>
-            <Property name="text" type="java.lang.String" value="Iniciar Sesi&#xf3;n"/>
+            <Property name="text" type="java.lang.String" value="Registrarse"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Fredoka" size="18" style="0"/>
             </Property>

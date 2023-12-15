@@ -102,9 +102,10 @@ public class FrmPrincipal extends javax.swing.JFrame {
         lblBg = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        smSalir = new javax.swing.JMenuItem();
+        smDashBoard = new javax.swing.JMenuItem();
+        smConfig = new javax.swing.JMenuItem();
+        suministros = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1500, 900));
@@ -159,7 +160,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         panelCuerpo.add(panelRedondeado2, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 110, 560, 570));
 
         lblBg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/vainilla/iconos/Bg.jpg"))); // NOI18N
-        panelCuerpo.add(lblBg, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1540, 850));
+        panelCuerpo.add(lblBg, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -20, 1550, 860));
 
         panelEscritorio.setLayer(panelCuerpo, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
@@ -176,7 +177,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         );
         panelEscritorioLayout.setVerticalGroup(
             panelEscritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 820, Short.MAX_VALUE)
+            .addGap(0, 840, Short.MAX_VALUE)
             .addGroup(panelEscritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(panelEscritorioLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -189,51 +190,65 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         jMenu1.setText("Archivo");
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        jMenuItem1.setText("Salir");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        smSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        smSalir.setText("Salir");
+        smSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                smSalirActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        jMenu1.add(smSalir);
 
-        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        jMenuItem2.setText("Dashboard");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        smDashBoard.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        smDashBoard.setText("Dashboard");
+        smDashBoard.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                smDashBoardActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem2);
+        jMenu1.add(smDashBoard);
+
+        smConfig.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        smConfig.setText("Configuración");
+        smConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                smConfigActionPerformed(evt);
+            }
+        });
+        jMenu1.add(smConfig);
 
         menuBar.add(jMenu1);
 
-        jMenu2.setText("Edit");
-        menuBar.add(jMenu2);
+        suministros.setText("Suministros");
+        menuBar.add(suministros);
 
         setJMenuBar(menuBar);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void smSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smSalirActionPerformed
         System.exit(0);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_smSalirActionPerformed
 
     private void btnRegisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnRegisActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void smDashBoardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smDashBoardActionPerformed
         FrmDashBoard ventanaDash = new FrmDashBoard();
         agregarVentanaPanel(ventanaDash);
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_smDashBoardActionPerformed
 
     private void btnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOutLine1ActionPerformed
         FrmLogin ventanaLogin = new FrmLogin();
         agregarVentanaPanel(ventanaLogin);
     }//GEN-LAST:event_buttonOutLine1ActionPerformed
+
+    private void smConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smConfigActionPerformed
+        FrmConfig windowConfig = new FrmConfig(null, true);
+        windowConfig.setVisible(true);
+    }//GEN-LAST:event_smConfigActionPerformed
 
     /**
      * @param args the command line arguments
@@ -266,14 +281,15 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JLabel lblBg;
     private javax.swing.JLabel lblIcon;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JPanel panelCuerpo;
     private javax.swing.JDesktopPane panelEscritorio;
     private com.vainilla.apariencia.PanelRedondeado panelRedondeado2;
+    private javax.swing.JMenuItem smConfig;
+    private javax.swing.JMenuItem smDashBoard;
+    private javax.swing.JMenuItem smSalir;
+    private javax.swing.JMenu suministros;
     // End of variables declaration//GEN-END:variables
 }
