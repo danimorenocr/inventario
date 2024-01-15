@@ -41,7 +41,7 @@ public class DaoLogin extends Conexion implements Funcionalidad<Login> {
     }
 
     public Login buscar(String usuario) {
-    try {
+        try {
             cadenaSql = "SELECT nombre, contrasenna FROM usuarios WHERE nombre = ? ";
 
             consulta = objConexion.prepareStatement(cadenaSql);
@@ -70,8 +70,6 @@ public class DaoLogin extends Conexion implements Funcionalidad<Login> {
     public Login buscar(Integer llavePrimaria) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-    
-    
 
     @Override
     public Boolean eliminar(Integer llavePrimaria) {
@@ -88,5 +86,9 @@ public class DaoLogin extends Conexion implements Funcionalidad<Login> {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    
+    @Override
+    public List<Login> buscarDato(String dato, String campo) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }

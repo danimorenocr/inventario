@@ -15,5 +15,7 @@ public interface Funcionalidad<T> {
     public Boolean actualizar(T elObjeto);
 
     public Integer totalRegistros();
+    
+    public List<T> buscarDato(String dato, String campo);
 
 }

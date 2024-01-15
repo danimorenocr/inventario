@@ -101,11 +101,18 @@ public class FrmPrincipal extends javax.swing.JFrame {
         lblIcon = new javax.swing.JLabel();
         lblBg = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        mArchivo = new javax.swing.JMenu();
         smSalir = new javax.swing.JMenuItem();
         smDashBoard = new javax.swing.JMenuItem();
         smConfig = new javax.swing.JMenuItem();
-        suministros = new javax.swing.JMenu();
+        mComercio = new javax.swing.JMenu();
+        smProveedor = new javax.swing.JMenuItem();
+        smCliente = new javax.swing.JMenuItem();
+        mSuministros = new javax.swing.JMenu();
+        smProduct = new javax.swing.JMenuItem();
+        smAncheta = new javax.swing.JMenuItem();
+        mOrdenes = new javax.swing.JMenu();
+        smPedidos = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1500, 900));
@@ -121,6 +128,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
         btnRegis.setBackground(new java.awt.Color(255, 182, 193));
         btnRegis.setText("Registrarse");
         btnRegis.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
+        btnRegis.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegisActionPerformed(evt);
+            }
+        });
         panelRedondeado2.add(btnRegis);
         btnRegis.setBounds(140, 460, 290, 50);
 
@@ -188,7 +200,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         getContentPane().add(panelEscritorio);
         panelEscritorio.setBounds(0, 0, 1550, 820);
 
-        jMenu1.setText("Archivo");
+        mArchivo.setText("Archivo");
 
         smSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         smSalir.setText("Salir");
@@ -197,7 +209,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 smSalirActionPerformed(evt);
             }
         });
-        jMenu1.add(smSalir);
+        mArchivo.add(smSalir);
 
         smDashBoard.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         smDashBoard.setText("Dashboard");
@@ -206,7 +218,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 smDashBoardActionPerformed(evt);
             }
         });
-        jMenu1.add(smDashBoard);
+        mArchivo.add(smDashBoard);
 
         smConfig.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         smConfig.setText("Configuración");
@@ -215,12 +227,48 @@ public class FrmPrincipal extends javax.swing.JFrame {
                 smConfigActionPerformed(evt);
             }
         });
-        jMenu1.add(smConfig);
+        mArchivo.add(smConfig);
 
-        menuBar.add(jMenu1);
+        menuBar.add(mArchivo);
 
-        suministros.setText("Suministros");
-        menuBar.add(suministros);
+        mComercio.setText("Comercio");
+
+        smProveedor.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        smProveedor.setText("Proveedores");
+        smProveedor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                smProveedorActionPerformed(evt);
+            }
+        });
+        mComercio.add(smProveedor);
+
+        smCliente.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        smCliente.setText("Clientes");
+        mComercio.add(smCliente);
+
+        menuBar.add(mComercio);
+
+        mSuministros.setText("Suministros");
+
+        smProduct.setText("Productos");
+        smProduct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                smProductActionPerformed(evt);
+            }
+        });
+        mSuministros.add(smProduct);
+
+        smAncheta.setText("Anchetas");
+        mSuministros.add(smAncheta);
+
+        menuBar.add(mSuministros);
+
+        mOrdenes.setText("Ordenes");
+
+        smPedidos.setText("Pedidos");
+        mOrdenes.add(smPedidos);
+
+        menuBar.add(mOrdenes);
 
         setJMenuBar(menuBar);
 
@@ -232,7 +280,8 @@ public class FrmPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_smSalirActionPerformed
 
     private void btnRegisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisActionPerformed
-        // TODO add your handling code here:
+        FrmRegistarse ventanaRegistarse = new FrmRegistarse();
+        agregarVentanaPanel(ventanaRegistarse);
     }//GEN-LAST:event_btnRegisActionPerformed
 
     private void smDashBoardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smDashBoardActionPerformed
@@ -249,6 +298,16 @@ public class FrmPrincipal extends javax.swing.JFrame {
         FrmConfig windowConfig = new FrmConfig(null, true);
         windowConfig.setVisible(true);
     }//GEN-LAST:event_smConfigActionPerformed
+
+    private void smProveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smProveedorActionPerformed
+        FrmProveedor ventanaProveedor = new FrmProveedor();
+        agregarVentanaPanel(ventanaProveedor);
+    }//GEN-LAST:event_smProveedorActionPerformed
+
+    private void smProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smProductActionPerformed
+        FrmProducto ventanaProducto = new FrmProducto();
+        agregarVentanaPanel(ventanaProducto);
+    }//GEN-LAST:event_smProductActionPerformed
 
     /**
      * @param args the command line arguments
@@ -280,16 +339,23 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JLabel lblBg;
     private javax.swing.JLabel lblIcon;
+    private javax.swing.JMenu mArchivo;
+    private javax.swing.JMenu mComercio;
+    private javax.swing.JMenu mOrdenes;
+    private javax.swing.JMenu mSuministros;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JPanel panelCuerpo;
     private javax.swing.JDesktopPane panelEscritorio;
     private com.vainilla.apariencia.PanelRedondeado panelRedondeado2;
+    private javax.swing.JMenuItem smAncheta;
+    private javax.swing.JMenuItem smCliente;
     private javax.swing.JMenuItem smConfig;
     private javax.swing.JMenuItem smDashBoard;
+    private javax.swing.JMenuItem smPedidos;
+    private javax.swing.JMenuItem smProduct;
+    private javax.swing.JMenuItem smProveedor;
     private javax.swing.JMenuItem smSalir;
-    private javax.swing.JMenu suministros;
     // End of variables declaration//GEN-END:variables
 }

@@ -18,6 +18,7 @@ public class FrmDashBoard extends javax.swing.JInternalFrame {
     private void apariencia() {
         cargarImg();
 
+
 //        panelRedondeado2.cambiarRadioEsquinas(150);
 //        btnRegis.cambiarRadioEsquinas(20);
 //        btnIniciar.cambiarRadioEsquinas(20);
@@ -66,7 +67,7 @@ public class FrmDashBoard extends javax.swing.JInternalFrame {
 
         panelCuerpo = new javax.swing.JPanel();
         panelContenedor = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        lblTitulo = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         btnProduct = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
@@ -97,8 +98,8 @@ public class FrmDashBoard extends javax.swing.JInternalFrame {
 
         panelContenedor.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel1.setFont(new java.awt.Font("Fredoka", 0, 36)); // NOI18N
-        jLabel1.setText("Bienvenid@");
+        lblTitulo.setFont(new java.awt.Font("Fredoka", 0, 36)); // NOI18N
+        lblTitulo.setText("Bienvenid@");
 
         jLabel2.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -267,15 +268,12 @@ public class FrmDashBoard extends javax.swing.JInternalFrame {
                         .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 1485, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 760, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
+                            .addComponent(lblTitulo))
                         .addContainerGap(12, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelContenedorLayout.createSequentialGroup()
                         .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelContenedorLayout.createSequentialGroup()
-                                .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 760, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 760, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)
                             .addGroup(panelContenedorLayout.createSequentialGroup()
                                 .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(36, 36, 36)
@@ -294,7 +292,7 @@ public class FrmDashBoard extends javax.swing.JInternalFrame {
             panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelContenedorLayout.createSequentialGroup()
                 .addGap(34, 34, 34)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -357,7 +355,6 @@ public class FrmDashBoard extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnFacturar;
     private javax.swing.JButton btnProduct;
     private javax.swing.JButton btnVerMas;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -375,6 +372,7 @@ public class FrmDashBoard extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblIconFact;
     private javax.swing.JLabel lblIconProduc;
     private javax.swing.JLabel lblIconVer;
+    private javax.swing.JLabel lblTitulo;
     private javax.swing.JPanel panelContenedor;
     private javax.swing.JPanel panelCuerpo;
     private javax.swing.JTable tablaDatos;

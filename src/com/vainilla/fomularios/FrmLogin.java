@@ -64,9 +64,9 @@ public class FrmLogin extends javax.swing.JInternalFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        cajaContra = new javax.swing.JTextField();
         cajaNombre = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
+        cajaContra = new javax.swing.JPasswordField();
         btnRegis = new com.vainilla.apariencia.BotonRedon();
         jLabel5 = new javax.swing.JLabel();
 
@@ -95,11 +95,6 @@ public class FrmLogin extends javax.swing.JInternalFrame {
         panelRedondeado2.add(jLabel3);
         jLabel3.setBounds(10, 200, 548, 23);
 
-        cajaContra.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
-        cajaContra.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 182, 193), 3, true));
-        panelRedondeado2.add(cajaContra);
-        cajaContra.setBounds(80, 420, 420, 40);
-
         cajaNombre.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
         cajaNombre.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 182, 193), 3, true));
         panelRedondeado2.add(cajaNombre);
@@ -110,6 +105,10 @@ public class FrmLogin extends javax.swing.JInternalFrame {
         jLabel4.setText("Usuario");
         panelRedondeado2.add(jLabel4);
         jLabel4.setBounds(80, 260, 240, 23);
+
+        cajaContra.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 182, 193), 3, true));
+        panelRedondeado2.add(cajaContra);
+        cajaContra.setBounds(80, 430, 420, 40);
 
         panelCuerpo.add(panelRedondeado2);
         panelRedondeado2.setBounds(520, 80, 560, 570);
@@ -155,7 +154,7 @@ public class FrmLogin extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.vainilla.apariencia.BotonRedon btnRegis;
-    private javax.swing.JTextField cajaContra;
+    private javax.swing.JPasswordField cajaContra;
     private javax.swing.JTextField cajaNombre;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

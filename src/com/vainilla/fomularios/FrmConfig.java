@@ -14,6 +14,7 @@ public class FrmConfig extends javax.swing.JDialog {
         super(parent, modal);
         quitarHeader(this);
         initComponents();
+        cargarDatos();
         Deshabilitar();
     }
 
@@ -41,7 +42,6 @@ public class FrmConfig extends javax.swing.JDialog {
         btnGuardar.setVisible(true);
         btnCerrar.setVisible(false);
         btnCancelar.setVisible(true);
-        cargarDatos();
 
     }
 
@@ -102,6 +102,9 @@ public class FrmConfig extends javax.swing.JDialog {
         cajaUsuario = new javax.swing.JTextField();
         btnCancelar = new com.vainilla.apariencia.ButtonOutLine();
         btnGuardar = new com.vainilla.apariencia.ButtonOutLine();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -151,7 +154,6 @@ public class FrmConfig extends javax.swing.JDialog {
         cajaContra.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
         cajaContra.setForeground(new java.awt.Color(55, 28, 185));
         cajaContra.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        cajaContra.setText("Contraseña");
         cajaContra.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(114, 90, 227), 3, true));
         cajaContra.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -168,7 +170,6 @@ public class FrmConfig extends javax.swing.JDialog {
         cajaNombre.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
         cajaNombre.setForeground(new java.awt.Color(55, 28, 185));
         cajaNombre.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        cajaNombre.setText("Nombre BD");
         cajaNombre.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(114, 90, 227), 3, true));
         cajaNombre.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -185,7 +186,6 @@ public class FrmConfig extends javax.swing.JDialog {
         cajaUsuario.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
         cajaUsuario.setForeground(new java.awt.Color(55, 28, 185));
         cajaUsuario.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        cajaUsuario.setText("Usuario");
         cajaUsuario.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(114, 90, 227), 3, true));
         cajaUsuario.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -226,6 +226,18 @@ public class FrmConfig extends javax.swing.JDialog {
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel3.setText("Nombre de la base de datos:");
+
+        jLabel4.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel4.setText("Usuario:");
+
+        jLabel5.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel5.setText("Contraseña:");
+
         javax.swing.GroupLayout panelCuerpoLayout = new javax.swing.GroupLayout(panelCuerpo);
         panelCuerpo.setLayout(panelCuerpoLayout);
         panelCuerpoLayout.setHorizontalGroup(
@@ -239,7 +251,10 @@ public class FrmConfig extends javax.swing.JDialog {
                         .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(cajaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cajaUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cajaContra, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(cajaContra, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))))
                 .addGap(0, 33, Short.MAX_VALUE))
             .addGroup(panelCuerpoLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -259,11 +274,17 @@ public class FrmConfig extends javax.swing.JDialog {
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
                 .addComponent(jLabel2)
-                .addGap(57, 57, 57)
+                .addGap(28, 28, 28)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cajaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel4)
+                .addGap(5, 5, 5)
                 .addComponent(cajaUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+                .addGap(11, 11, 11)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cajaContra, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCuerpoLayout.createSequentialGroup()
@@ -407,6 +428,9 @@ public class FrmConfig extends javax.swing.JDialog {
     private javax.swing.JTextField cajaUsuario;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel panelCuerpo;
     // End of variables declaration//GEN-END:variables
 }

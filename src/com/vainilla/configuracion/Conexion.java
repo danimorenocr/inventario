@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class Conexion {
 
@@ -14,13 +15,11 @@ public class Conexion {
     Credenciales datos = new Credenciales();
     private String nombreBase = datos.getNombreBase();
     private String clave = datos.getClave();
-    private String usuario = datos.getUsuario();;
+    private String usuario = datos.getUsuario();
+    ;
     private String driver;
     private String url;
 
-  
-
-    
     protected String cadenaSql;
     protected ResultSet registros;
     protected Connection objConexion;
@@ -29,7 +28,6 @@ public class Conexion {
 
     public Conexion() {
 
-        
         driver = "com.mysql.cj.jdbc.Driver";
         url = "jdbc:mysql://localhost:3306/" + nombreBase;
         System.out.println("usuario: " + usuario + " Contra: " + clave + " url: " + url);
@@ -47,6 +45,8 @@ public class Conexion {
             System.out.println("Conectado a MySql");
 
         } catch (ClassNotFoundException | SQLException ex) {
+            String mensajeError = "Error al conectar a la base de datos:\nPor favor, asegurese de que el servicio de MySQL esté activo\n";
+            JOptionPane.showMessageDialog(null, mensajeError, "Error de conexión", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
 
         }
