@@ -54,6 +54,11 @@ public class FrmProveedor extends javax.swing.JInternalFrame {
         System.out.println("existencia: " + existencia);
         return existencia;
     }
+    
+    /*
+    - BUSCA EN LA BASE DE DATOS LOS CARACTERES QUE INGRESE EL USUARIO
+    - TRAE LOS DATOS DE CADA COLUMNA CORRESPONDIENTE
+    */
 
     private void buscarDato(String dato, String campo) {
         List<Proveedor> arrayProv;
@@ -317,6 +322,7 @@ public class FrmProveedor extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tablaDatos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         tablaDatos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaDatosMouseClicked(evt);

@@ -109,6 +109,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         smProveedor = new javax.swing.JMenuItem();
         smCliente = new javax.swing.JMenuItem();
         mSuministros = new javax.swing.JMenu();
+        smCatProducto = new javax.swing.JMenuItem();
         smProduct = new javax.swing.JMenuItem();
         smAncheta = new javax.swing.JMenuItem();
         mOrdenes = new javax.swing.JMenu();
@@ -250,6 +251,14 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         mSuministros.setText("Suministros");
 
+        smCatProducto.setText("Categoria de Productos");
+        smCatProducto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                smCatProductoActionPerformed(evt);
+            }
+        });
+        mSuministros.add(smCatProducto);
+
         smProduct.setText("Productos");
         smProduct.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -309,6 +318,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
         agregarVentanaPanel(ventanaProducto);
     }//GEN-LAST:event_smProductActionPerformed
 
+    private void smCatProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smCatProductoActionPerformed
+        FrmCategoriaProducto windowCat = new FrmCategoriaProducto(null, true);
+        windowCat.setVisible(true);
+    }//GEN-LAST:event_smCatProductoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -350,6 +364,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JDesktopPane panelEscritorio;
     private com.vainilla.apariencia.PanelRedondeado panelRedondeado2;
     private javax.swing.JMenuItem smAncheta;
+    private javax.swing.JMenuItem smCatProducto;
     private javax.swing.JMenuItem smCliente;
     private javax.swing.JMenuItem smConfig;
     private javax.swing.JMenuItem smDashBoard;

@@ -75,6 +75,14 @@
             <Property name="text" type="java.lang.String" value="Suministros"/>
           </Properties>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="smCatProducto">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Categoria de Productos"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="smCatProductoActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="smProduct">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Productos"/>
