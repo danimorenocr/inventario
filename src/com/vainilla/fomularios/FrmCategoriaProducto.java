@@ -1,9 +1,7 @@
 package com.vainilla.fomularios;
 
 import com.vainilla.daos.DaoCategoriaProducto;
-import com.vainilla.daos.DaoProveedor;
 import com.vainilla.entidades.CategoriaProducto;
-import com.vainilla.entidades.Proveedor;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
