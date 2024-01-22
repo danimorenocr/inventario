@@ -3,6 +3,7 @@ package com.vainilla.entidades;
 import java.util.Date;
 
 public class Producto {
+
     private Integer codProducto;
     private String nombreProducto;
     private Integer numeroCajas;
@@ -16,13 +17,14 @@ public class Producto {
     private Date fechaVencimiento;
     private Integer stock;
     private Double tamanno;
+    private Integer precioMetro;
     private CategoriaProducto categoriaProducto;
     private Proveedor nombreProveedor;
 
     public Producto() {
     }
 
-    public Producto(Integer codProducto, String nombreProducto, Integer numeroCajas, Integer unidadPorCaja, Integer totalUnidades, Integer precioCaja, Integer precioUnidad, Integer envio, Integer precioFinal, Date fechaCompra, Date fechaVencimiento, Integer stock, Double tamanno, CategoriaProducto categoriaProducto, Proveedor nombreProveedor) {
+    public Producto(Integer codProducto, String nombreProducto, Integer numeroCajas, Integer unidadPorCaja, Integer totalUnidades, Integer precioCaja, Integer precioUnidad, Integer envio, Integer precioFinal, Date fechaCompra, Date fechaVencimiento, Integer stock, Double tamanno, Integer precioMetro, CategoriaProducto categoriaProducto, Proveedor nombreProveedor) {
         this.codProducto = codProducto;
         this.nombreProducto = nombreProducto;
         this.numeroCajas = numeroCajas;
@@ -36,6 +38,7 @@ public class Producto {
         this.fechaVencimiento = fechaVencimiento;
         this.stock = stock;
         this.tamanno = tamanno;
+        this.precioMetro = precioMetro;
         this.categoriaProducto = categoriaProducto;
         this.nombreProveedor = nombreProveedor;
     }
@@ -160,12 +163,17 @@ public class Producto {
         this.nombreProveedor = nombreProveedor;
     }
 
+    public Integer getPrecioMetro() {
+        return precioMetro;
+    }
+
+    public void setPrecioMetro(Integer precioMetro) {
+        this.precioMetro = precioMetro;
+    }
+
     @Override
     public String toString() {
-        return "Producto{" + "codProducto=" + codProducto + ", nombreProducto=" + nombreProducto + ", numeroCajas=" + numeroCajas + ", unidadPorCaja=" + unidadPorCaja + ", totalUnidades=" + totalUnidades + ", precioCaja=" + precioCaja + ", precioUnidad=" + precioUnidad + ", envio=" + envio + ", precioFinal=" + precioFinal + ", fechaCompra=" + fechaCompra + ", fechaVencimiento=" + fechaVencimiento + ", stock=" + stock + ", tamanno=" + tamanno + ", categoriaProducto=" + categoriaProducto + ", nombreProveedor=" + nombreProveedor + '}';
+        return "Producto{" + "codProducto=" + codProducto + ", nombreProducto=" + nombreProducto + ", numeroCajas=" + numeroCajas + ", unidadPorCaja=" + unidadPorCaja + ", totalUnidades=" + totalUnidades + ", precioCaja=" + precioCaja + ", precioUnidad=" + precioUnidad + ", envio=" + envio + ", precioFinal=" + precioFinal + ", fechaCompra=" + fechaCompra + ", fechaVencimiento=" + fechaVencimiento + ", stock=" + stock + ", tamanno=" + tamanno + ", precioMetro=" + precioMetro + ", categoriaProducto=" + categoriaProducto + ", nombreProveedor=" + nombreProveedor + '}';
     }
-    
-    
-    
-    
+
 }

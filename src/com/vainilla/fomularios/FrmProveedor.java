@@ -38,6 +38,7 @@ public class FrmProveedor extends javax.swing.JInternalFrame {
         tablaDatos.setModel(modeloTabla);
         lblTotal.setText(armarLineaCantidad());
         cargarDatosProveed("");
+        cmbBuscar.setSelectedIndex(1);
     }
 
     private boolean verificarNombre(String nombre) {

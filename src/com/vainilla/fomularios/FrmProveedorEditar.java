@@ -309,6 +309,7 @@ public class FrmProveedorEditar extends javax.swing.JDialog {
 
                 if (dao.actualizar(objActualizar)) {
                     JOptionPane.showMessageDialog(panelCuerpo, "El proveedor fue actualizado", "Información", JOptionPane.INFORMATION_MESSAGE);
+                    
                 } else {
                     JOptionPane.showMessageDialog(panelCuerpo, "No se pudo actualizar", "Error", JOptionPane.ERROR_MESSAGE);
                 }

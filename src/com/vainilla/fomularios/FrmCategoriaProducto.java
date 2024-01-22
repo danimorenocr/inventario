@@ -1,7 +1,9 @@
 package com.vainilla.fomularios;
 
 import com.vainilla.daos.DaoCategoriaProducto;
+import com.vainilla.daos.DaoProveedor;
 import com.vainilla.entidades.CategoriaProducto;
+import com.vainilla.entidades.Proveedor;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -11,10 +13,10 @@ import javax.swing.table.DefaultTableModel;
 
 public class FrmCategoriaProducto extends javax.swing.JDialog {
 
-    private Integer codProveedor = null;
+    private Integer codCategoria = null;
     Integer seleccionarBuscar = 0;
 
-    private String titulos[] = {"Código", "Nombre", "Editar", "Eliminar"};
+    private String titulos[] = {"Código", "Nombre", "Cant Productos"};
 
     private DefaultTableModel modeloTabla = new DefaultTableModel(titulos, 0) {
         @Override
@@ -22,13 +24,6 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
             return false;
         }
 
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            if (columnIndex == 2 || columnIndex == 3) {
-                return ImageIcon.class;
-            }
-            return Object.class;
-        }
     };
 
     public FrmCategoriaProducto(java.awt.Frame parent, boolean modal) {
@@ -37,6 +32,8 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
         tablaDatos.setModel(modeloTabla);
         cargarDatosCat("");
         lblTotal.setText(armarLineaCantidad());
+        actualizarDisabled();
+        cmbBuscar.setSelectedIndex(1);
 
     }
 
@@ -91,14 +88,6 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
         List<CategoriaProducto> arrayCat;
         DaoCategoriaProducto miDao = new DaoCategoriaProducto();
 
-        String nomElim = "/com/vainilla/iconos/borrar.png";
-        String rutaIconElim = this.getClass().getResource(nomElim).getPath();
-        ImageIcon borrarIcono = new ImageIcon(rutaIconElim);
-
-        String nomEdit = "/com/vainilla/iconos/editar.png";
-        String rutaIconEdit = this.getClass().getResource(nomEdit).getPath();
-        ImageIcon editarIcono = new ImageIcon(rutaIconEdit);
-
         modeloTabla.setNumRows(0);
 
         arrayCat = miDao.consultar(ordencito);
@@ -108,8 +97,7 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
 
             filita[0] = cat.getCodCategoria();
             filita[1] = cat.getNombreCategoria();
-            filita[2] = editarIcono;
-            filita[3] = borrarIcono;
+            filita[2] = cat.getCantProductos();
 
             modeloTabla.addRow(filita);
 
@@ -118,11 +106,12 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
         //DEFINE EL TAMAÑO DE CADA COLUMNA
         tablaDatos.getColumnModel().getColumn(0).setPreferredWidth(50);
         tablaDatos.getColumnModel().getColumn(1).setPreferredWidth(350);
+        tablaDatos.getColumnModel().getColumn(2).setPreferredWidth(50);
 
         // CENTRA LOS TITULOS DE CADA COLUMNA, MENOS LOS ICONOS
         DefaultTableCellRenderer centrado = new DefaultTableCellRenderer();
         centrado.setHorizontalAlignment(JLabel.CENTER);
-        for (int i = 0; i < (tablaDatos.getColumnCount() - 2); i++) {
+        for (int i = 0; i < (tablaDatos.getColumnCount()); i++) {
             tablaDatos.getColumnModel().getColumn(i).setCellRenderer(centrado);
         }
 
@@ -150,28 +139,60 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
         List<CategoriaProducto> arrayCat;
         DaoCategoriaProducto dao = new DaoCategoriaProducto();
 
-        String nomElim = "/com/vainilla/iconos/borrar.png";
-        String rutaIconElim = this.getClass().getResource(nomElim).getPath();
-        ImageIcon borrarIcono = new ImageIcon(rutaIconElim);
-
-        String nomEdit = "/com/vainilla/iconos/editar.png";
-        String rutaIconEdit = this.getClass().getResource(nomEdit).getPath();
-        ImageIcon editarIcono = new ImageIcon(rutaIconEdit);
-
         modeloTabla.setNumRows(0);
 
         arrayCat = dao.buscarDato(dato, campo);
         arrayCat.forEach((cat) -> {
-            Object filita[] = new Object[4];
+            Object filita[] = new Object[3];
 
             filita[0] = cat.getCodCategoria();
             filita[1] = cat.getNombreCategoria();
-            filita[2] = editarIcono;
-            filita[3] = borrarIcono;
+            filita[2] = cat.getCantProductos();
 
             modeloTabla.addRow(filita);
 
         });
+    }
+
+    private boolean siElimino(Integer codigoCat) {
+        int opcion;
+        Boolean bandera = false;
+        String textoBotones[] = {"Aceptar", "Cancelar"};
+        DaoCategoriaProducto dao = new DaoCategoriaProducto();
+
+        CategoriaProducto objCat = dao.buscar(codigoCat);
+
+        opcion = JOptionPane.showOptionDialog(panelCuerpo, "¿Esta seguro de elimnar la categoria " + objCat.getNombreCategoria()
+                + "?", "Aviso", JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, textoBotones, textoBotones[1]);
+
+        if (opcion == JOptionPane.YES_OPTION) {
+
+            if (objCat.getCantProductos() > 0) {
+                JOptionPane.showMessageDialog(panelCuerpo, "La categoria contiene productos asociados, no se puede eliminar", "Información", JOptionPane.ERROR_MESSAGE);
+                bandera = false;
+
+            } else {
+                bandera = true;
+            }
+        }
+
+        return bandera;
+    }
+
+    private void actualizarDisabled() {
+        btnActualizar.setEnabled(false);
+        btnEliminar.setEnabled(false);
+        btnAgregar.setEnabled(true);
+        btnCancelar.setEnabled(true);
+
+    }
+
+    private void actualizarEnabled() {
+        btnActualizar.setEnabled(true);
+        btnEliminar.setEnabled(true);
+        btnAgregar.setEnabled(false);
+        btnCancelar.setEnabled(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -193,21 +214,9 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
         cmbBuscar = new javax.swing.JComboBox<>();
         btnAgregar = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
-        panelContenedor1 = new javax.swing.JPanel();
-        panelCuerpo1 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        cajaNombre1 = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tablaDatos1 = new javax.swing.JTable();
-        cajaBuscar1 = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
-        cmbOrdenar1 = new javax.swing.JComboBox<>();
-        lblTotal1 = new javax.swing.JLabel();
-        cmbBuscar1 = new javax.swing.JComboBox<>();
-        btnAgregar1 = new javax.swing.JButton();
-        jSeparator2 = new javax.swing.JSeparator();
+        btnEliminar = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
+        btnActualizar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -297,7 +306,7 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
         });
 
         btnAgregar.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
-        btnAgregar.setText("Crear");
+        btnAgregar.setText("Agregar");
         btnAgregar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
         btnAgregar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
@@ -308,6 +317,36 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
 
         jSeparator1.setForeground(new java.awt.Color(242, 223, 91));
 
+        btnEliminar.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
+        btnEliminar.setText("Eliminar");
+        btnEliminar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
+        btnEliminar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
+
+        btnCancelar.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
+        btnCancelar.setText("Cancelar");
+        btnCancelar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
+        btnCancelar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
+
+        btnActualizar.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
+        btnActualizar.setText("Actualizar");
+        btnActualizar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
+        btnActualizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelCuerpoLayout = new javax.swing.GroupLayout(panelCuerpo);
         panelCuerpo.setLayout(panelCuerpoLayout);
         panelCuerpoLayout.setHorizontalGroup(
@@ -316,12 +355,6 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCuerpoLayout.createSequentialGroup()
-                .addContainerGap(24, Short.MAX_VALUE)
-                .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1440, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 1440, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16))
             .addGroup(panelCuerpoLayout.createSequentialGroup()
                 .addGap(43, 43, 43)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -337,14 +370,27 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
                         .addGap(45, 45, 45)
                         .addComponent(cmbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(panelCuerpoLayout.createSequentialGroup()
-                .addGap(56, 56, 56)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cajaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(123, 123, 123))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCuerpoLayout.createSequentialGroup()
+                .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(panelCuerpoLayout.createSequentialGroup()
+                        .addGap(56, 56, 56)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cajaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(89, 89, 89)
+                        .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelCuerpoLayout.createSequentialGroup()
+                        .addContainerGap(24, Short.MAX_VALUE)
+                        .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1440, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 1440, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(16, 16, 16))
         );
         panelCuerpoLayout.setVerticalGroup(
             panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -355,7 +401,10 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
                 .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cajaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
-                    .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -374,173 +423,6 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
 
         panelContenedor.add(panelCuerpo);
         panelCuerpo.setBounds(20, 20, 1480, 790);
-
-        panelContenedor1.setBackground(new java.awt.Color(255, 249, 204));
-        panelContenedor1.setLayout(null);
-
-        panelCuerpo1.setBackground(new java.awt.Color(255, 255, 255));
-
-        jLabel5.setFont(new java.awt.Font("Fredoka", 0, 24)); // NOI18N
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel5.setText("Nombre:");
-
-        cajaNombre1.setBackground(new java.awt.Color(255, 249, 204));
-        cajaNombre1.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
-        cajaNombre1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
-
-        jLabel6.setFont(new java.awt.Font("Fredoka", 0, 24)); // NOI18N
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel6.setText("Categorias en lista");
-
-        jLabel9.setFont(new java.awt.Font("Fredoka", 0, 48)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(248, 217, 8));
-        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel9.setText("Categorias de los Productos");
-
-        tablaDatos1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        tablaDatos1.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
-        tablaDatos1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        tablaDatos1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        tablaDatos1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tablaDatos1MouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(tablaDatos1);
-
-        cajaBuscar1.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
-        cajaBuscar1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
-        cajaBuscar1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cajaBuscar1ActionPerformed(evt);
-            }
-        });
-        cajaBuscar1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                cajaBuscar1KeyReleased(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                cajaBuscar1KeyTyped(evt);
-            }
-        });
-
-        jLabel10.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel10.setText("Buscar:");
-
-        cmbOrdenar1.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
-        cmbOrdenar1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ordenar por:", "Ordenar por codigo", "Ordenar por nombre", "Ordenar por telefono", "Ordenar por ciudad" }));
-        cmbOrdenar1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
-        cmbOrdenar1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbOrdenar1ActionPerformed(evt);
-            }
-        });
-
-        lblTotal1.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
-        lblTotal1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        lblTotal1.setText("se encontraron * categorias");
-
-        cmbBuscar1.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
-        cmbBuscar1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Codigo", "Nombre", "Telefono", "Ciudad" }));
-        cmbBuscar1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
-        cmbBuscar1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbBuscar1ActionPerformed(evt);
-            }
-        });
-
-        btnAgregar1.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
-        btnAgregar1.setText("Crear");
-        btnAgregar1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
-        btnAgregar1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnAgregar1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregar1ActionPerformed(evt);
-            }
-        });
-
-        jSeparator2.setForeground(new java.awt.Color(242, 223, 91));
-
-        javax.swing.GroupLayout panelCuerpo1Layout = new javax.swing.GroupLayout(panelCuerpo1);
-        panelCuerpo1.setLayout(panelCuerpo1Layout);
-        panelCuerpo1Layout.setHorizontalGroup(
-            panelCuerpo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelCuerpo1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCuerpo1Layout.createSequentialGroup()
-                .addContainerGap(34, Short.MAX_VALUE)
-                .addGroup(panelCuerpo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1440, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 1440, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16))
-            .addGroup(panelCuerpo1Layout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(120, 120, 120)
-                .addComponent(cmbOrdenar1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(171, 171, 171)
-                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelCuerpo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblTotal1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(panelCuerpo1Layout.createSequentialGroup()
-                        .addComponent(cajaBuscar1, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(45, 45, 45)
-                        .addComponent(cmbBuscar1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(panelCuerpo1Layout.createSequentialGroup()
-                .addGap(56, 56, 56)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cajaNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnAgregar1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(123, 123, 123))
-        );
-        panelCuerpo1Layout.setVerticalGroup(
-            panelCuerpo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelCuerpo1Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(63, 63, 63)
-                .addGroup(panelCuerpo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cajaNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5)
-                    .addComponent(btnAgregar1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(panelCuerpo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(cmbOrdenar1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cajaBuscar1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10)
-                    .addComponent(cmbBuscar1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblTotal1)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(129, 129, 129))
-        );
-
-        panelContenedor1.add(panelCuerpo1);
-        panelCuerpo1.setBounds(20, 20, 1490, 790);
-
-        panelContenedor.add(panelContenedor1);
-        panelContenedor1.setBounds(0, 0, 0, 0);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -562,55 +444,15 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tablaDatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaDatosMouseClicked
-//        int columnaSeleccionada = tablaDatos.getSelectedColumn();
-//        DaoProveedor dao = new DaoProveedor();
-//
-//        if (columnaSeleccionada == 5) {
-//            int filaSeleccionada = tablaDatos.getSelectedRow();
-//            String codTexto = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
-//            codProveedor = Integer.valueOf(codTexto);
-//            Proveedor objProv = dao.buscar(codProveedor);
-//
-//            FrmProveedorEditar floatante = new FrmProveedorEditar(null, true, objProv);
-//            floatante.setVisible(true);
-//
-//            floatante.addWindowListener(new WindowAdapter() {
-//                @Override
-//                public void windowClosed(WindowEvent e) {
-//                    cargarDatosProveed("");
-//                    lblTotal.setText(armarLineaCantidad());
-//                }
-//
-//            });
-//        }
-//
-//        if (columnaSeleccionada == 6) {
-//            int filaSeleccionada = tablaDatos.getSelectedRow();
-//
-//            String codTexto = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
-//
-//            codProveedor = Integer.valueOf(codTexto);
-//
-//            DaoProveedor miDao = new DaoProveedor();
-//            Proveedor objProv = miDao.buscar(codProveedor);
-//
-//            if (objProv == null) {
-//                JOptionPane.showMessageDialog(panelCuerpo, "No se encontró el proveedor", "Advertencia", JOptionPane.WARNING_MESSAGE);
-//            } else {
-//
-//                if (siElimino(codProveedor)) {
-//                    DaoProveedor miDaoElim = new DaoProveedor();
-//                    if (miDaoElim.eliminar(codProveedor)) {
-//                        cargarDatosProveed("");
-//                        lblTotal.setText(armarLineaCantidad());
-//                        JOptionPane.showMessageDialog(panelCuerpo, "Eliminación Exitosa", "Información", JOptionPane.INFORMATION_MESSAGE);
-//                    } else {
-//                        JOptionPane.showMessageDialog(panelCuerpo, "No se pudo eliminar el proveedor", "Información", JOptionPane.ERROR_MESSAGE);
-//                    }
-//                }
-//            }
-//
-//        }
+        DaoCategoriaProducto dao = new DaoCategoriaProducto();
+
+        int filaSeleccionada = tablaDatos.getSelectedRow();
+        String codTexto = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
+        codCategoria = Integer.valueOf(codTexto);
+        CategoriaProducto objCat = dao.buscar(codCategoria);
+
+        cajaNombre.setText(objCat.getNombreCategoria());
+        actualizarEnabled();
 
 
     }//GEN-LAST:event_tablaDatosMouseClicked
@@ -678,33 +520,70 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_btnAgregarActionPerformed
 
-    private void tablaDatos1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaDatos1MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tablaDatos1MouseClicked
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
 
-    private void cajaBuscar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaBuscar1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cajaBuscar1ActionPerformed
+        int filaSeleccionada = tablaDatos.getSelectedRow();
 
-    private void cajaBuscar1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaBuscar1KeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cajaBuscar1KeyReleased
+        String codTexto = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
 
-    private void cajaBuscar1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaBuscar1KeyTyped
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cajaBuscar1KeyTyped
+        codCategoria = Integer.valueOf(codTexto);
 
-    private void cmbOrdenar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbOrdenar1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbOrdenar1ActionPerformed
+        DaoCategoriaProducto miDao = new DaoCategoriaProducto();
+        CategoriaProducto objCat = miDao.buscar(codCategoria);
 
-    private void cmbBuscar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbBuscar1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbBuscar1ActionPerformed
+        if (objCat == null) {
+            JOptionPane.showMessageDialog(panelCuerpo, "No se encontró el proveedor", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        } else {
 
-    private void btnAgregar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregar1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnAgregar1ActionPerformed
+            if (siElimino(codCategoria)) {
+                DaoCategoriaProducto daoElim = new DaoCategoriaProducto();
+                if (daoElim.eliminar(codCategoria)) {
+                    cargarDatosCat("");
+                    lblTotal.setText(armarLineaCantidad());
+                    borrarDatos();
+                    actualizarDisabled();
+                    JOptionPane.showMessageDialog(panelCuerpo, "Eliminación Exitosa", "Información", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(panelCuerpo, "No se pudo eliminar el proveedor", "Información", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+
+
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        borrarDatos();
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        if (estaTodoBien()) {
+            int filaSeleccionada = tablaDatos.getSelectedRow();
+            String codTexto = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
+            codCategoria = Integer.valueOf(codTexto);
+
+            String nombre = cajaNombre.getText().toUpperCase();
+            DaoCategoriaProducto dao = new DaoCategoriaProducto();
+            CategoriaProducto objCat = new CategoriaProducto();
+
+            if (!verificarNombre(nombre)) {
+                System.out.println("verificar: " + verificarNombre(nombre));
+                objCat.setNombreCategoria(nombre);
+                objCat.setCodCategoria(codCategoria);
+                System.out.println("nombre: " + nombre);
+                if (dao.actualizar(objCat)) {
+                    borrarDatos();
+                    cargarDatosCat("");
+                    JOptionPane.showMessageDialog(panelCuerpo, "La categoria fue actualizado", "Información", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(panelCuerpo, "No se pudo actualizar", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(panelCuerpo, "La categoria ya ha sido registrada con ese nombre", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+
+        }
+    }//GEN-LAST:event_btnActualizarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -750,35 +629,23 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnAgregar;
-    private javax.swing.JButton btnAgregar1;
+    private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnEliminar;
     private javax.swing.JTextField cajaBuscar;
-    private javax.swing.JTextField cajaBuscar1;
     private javax.swing.JTextField cajaNombre;
-    private javax.swing.JTextField cajaNombre1;
     private javax.swing.JComboBox<String> cmbBuscar;
-    private javax.swing.JComboBox<String> cmbBuscar1;
     private javax.swing.JComboBox<String> cmbOrdenar;
-    private javax.swing.JComboBox<String> cmbOrdenar1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel lblTotal;
-    private javax.swing.JLabel lblTotal1;
     private javax.swing.JPanel panelContenedor;
-    private javax.swing.JPanel panelContenedor1;
     private javax.swing.JPanel panelCuerpo;
-    private javax.swing.JPanel panelCuerpo1;
     private javax.swing.JTable tablaDatos;
-    private javax.swing.JTable tablaDatos1;
     // End of variables declaration//GEN-END:variables
 }
