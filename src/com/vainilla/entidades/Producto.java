@@ -8,9 +8,9 @@ public class Producto {
     private String nombreProducto;
     private Integer numeroCajas;
     private Integer unidadPorCaja;
-    private Integer totalUnidades;
     private Integer precioCaja;
     private Integer precioUnidad;
+    private Integer precioTotalCompra;
     private Integer envio;
     private Integer precioFinal;
     private Date fechaCompra;
@@ -18,20 +18,21 @@ public class Producto {
     private Integer stock;
     private Double tamanno;
     private Integer precioMetro;
-    private CategoriaProducto categoriaProducto;
-    private Proveedor nombreProveedor;
+    private Integer precioUnidadEnvio;
+    private CategoriaProducto codCategoriaProducto;
+    private Proveedor codProveedor;
 
     public Producto() {
     }
 
-    public Producto(Integer codProducto, String nombreProducto, Integer numeroCajas, Integer unidadPorCaja, Integer totalUnidades, Integer precioCaja, Integer precioUnidad, Integer envio, Integer precioFinal, Date fechaCompra, Date fechaVencimiento, Integer stock, Double tamanno, Integer precioMetro, CategoriaProducto categoriaProducto, Proveedor nombreProveedor) {
+    public Producto(Integer codProducto, String nombreProducto, Integer numeroCajas, Integer unidadPorCaja, Integer precioCaja, Integer precioUnidad, Integer precioTotalCompra, Integer envio, Integer precioFinal, Date fechaCompra, Date fechaVencimiento, Integer stock, Double tamanno, Integer precioMetro, Integer precioUnidadEnvio, CategoriaProducto codCategoriaProducto, Proveedor codProveedor) {
         this.codProducto = codProducto;
         this.nombreProducto = nombreProducto;
         this.numeroCajas = numeroCajas;
         this.unidadPorCaja = unidadPorCaja;
-        this.totalUnidades = totalUnidades;
         this.precioCaja = precioCaja;
         this.precioUnidad = precioUnidad;
+        this.precioTotalCompra = precioTotalCompra;
         this.envio = envio;
         this.precioFinal = precioFinal;
         this.fechaCompra = fechaCompra;
@@ -39,8 +40,9 @@ public class Producto {
         this.stock = stock;
         this.tamanno = tamanno;
         this.precioMetro = precioMetro;
-        this.categoriaProducto = categoriaProducto;
-        this.nombreProveedor = nombreProveedor;
+        this.precioUnidadEnvio = precioUnidadEnvio;
+        this.codCategoriaProducto = codCategoriaProducto;
+        this.codProveedor = codProveedor;
     }
 
     public Integer getCodProducto() {
@@ -75,14 +77,6 @@ public class Producto {
         this.unidadPorCaja = unidadPorCaja;
     }
 
-    public Integer getTotalUnidades() {
-        return totalUnidades;
-    }
-
-    public void setTotalUnidades(Integer totalUnidades) {
-        this.totalUnidades = totalUnidades;
-    }
-
     public Integer getPrecioCaja() {
         return precioCaja;
     }
@@ -97,6 +91,14 @@ public class Producto {
 
     public void setPrecioUnidad(Integer precioUnidad) {
         this.precioUnidad = precioUnidad;
+    }
+
+    public Integer getPrecioTotalCompra() {
+        return precioTotalCompra;
+    }
+
+    public void setPrecioTotalCompra(Integer precioTotalCompra) {
+        this.precioTotalCompra = precioTotalCompra;
     }
 
     public Integer getEnvio() {
@@ -147,22 +149,6 @@ public class Producto {
         this.tamanno = tamanno;
     }
 
-    public CategoriaProducto getCategoriaProducto() {
-        return categoriaProducto;
-    }
-
-    public void setCategoriaProducto(CategoriaProducto categoriaProducto) {
-        this.categoriaProducto = categoriaProducto;
-    }
-
-    public Proveedor getNombreProveedor() {
-        return nombreProveedor;
-    }
-
-    public void setNombreProveedor(Proveedor nombreProveedor) {
-        this.nombreProveedor = nombreProveedor;
-    }
-
     public Integer getPrecioMetro() {
         return precioMetro;
     }
@@ -171,9 +157,33 @@ public class Producto {
         this.precioMetro = precioMetro;
     }
 
+    public Integer getPrecioUnidadEnvio() {
+        return precioUnidadEnvio;
+    }
+
+    public void setPrecioUnidadEnvio(Integer precioUnidadEnvio) {
+        this.precioUnidadEnvio = precioUnidadEnvio;
+    }
+
+    public CategoriaProducto getCodCategoriaProducto() {
+        return codCategoriaProducto;
+    }
+
+    public void setCodCategoriaProducto(CategoriaProducto codCategoriaProducto) {
+        this.codCategoriaProducto = codCategoriaProducto;
+    }
+
+    public Proveedor getCodProveedor() {
+        return codProveedor;
+    }
+
+    public void setCodProveedor(Proveedor codProveedor) {
+        this.codProveedor = codProveedor;
+    }
+
     @Override
     public String toString() {
-        return "Producto{" + "codProducto=" + codProducto + ", nombreProducto=" + nombreProducto + ", numeroCajas=" + numeroCajas + ", unidadPorCaja=" + unidadPorCaja + ", totalUnidades=" + totalUnidades + ", precioCaja=" + precioCaja + ", precioUnidad=" + precioUnidad + ", envio=" + envio + ", precioFinal=" + precioFinal + ", fechaCompra=" + fechaCompra + ", fechaVencimiento=" + fechaVencimiento + ", stock=" + stock + ", tamanno=" + tamanno + ", precioMetro=" + precioMetro + ", categoriaProducto=" + categoriaProducto + ", nombreProveedor=" + nombreProveedor + '}';
+        return "Producto{" + "codProducto=" + codProducto + ", nombreProducto=" + nombreProducto + ", numeroCajas=" + numeroCajas + ", unidadPorCaja=" + unidadPorCaja + ", precioCaja=" + precioCaja + ", precioUnidad=" + precioUnidad + ", precioTotalCompra=" + precioTotalCompra + ", envio=" + envio + ", precioFinal=" + precioFinal + ", fechaCompra=" + fechaCompra + ", fechaVencimiento=" + fechaVencimiento + ", stock=" + stock + ", tamanno=" + tamanno + ", precioMetro=" + precioMetro + ", precioUnidadEnvio=" + precioUnidadEnvio + ", codCategoriaProducto=" + codCategoriaProducto + ", codProveedor=" + codProveedor + '}';
     }
 
 }

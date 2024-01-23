@@ -1,11 +1,8 @@
 package com.vainilla.fomularios;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import com.vainilla.apariencia.PanelRedondeado;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -361,7 +358,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu mSuministros;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JPanel panelCuerpo;
-    private javax.swing.JDesktopPane panelEscritorio;
+    javax.swing.JDesktopPane panelEscritorio;
     private com.vainilla.apariencia.PanelRedondeado panelRedondeado2;
     private javax.swing.JMenuItem smAncheta;
     private javax.swing.JMenuItem smCatProducto;
