@@ -108,13 +108,13 @@ public class FrmPrincipal extends javax.swing.JFrame {
         mSuministros = new javax.swing.JMenu();
         smCatProducto = new javax.swing.JMenuItem();
         smProduct = new javax.swing.JMenuItem();
+        smProductList = new javax.swing.JMenuItem();
         smAncheta = new javax.swing.JMenuItem();
         mOrdenes = new javax.swing.JMenu();
         smPedidos = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1500, 900));
-        setPreferredSize(new java.awt.Dimension(1500, 900));
         getContentPane().setLayout(null);
 
         panelCuerpo.setBackground(new java.awt.Color(255, 255, 255));
@@ -264,6 +264,14 @@ public class FrmPrincipal extends javax.swing.JFrame {
         });
         mSuministros.add(smProduct);
 
+        smProductList.setText("Lista de Productos");
+        smProductList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                smProductListActionPerformed(evt);
+            }
+        });
+        mSuministros.add(smProductList);
+
         smAncheta.setText("Anchetas");
         mSuministros.add(smAncheta);
 
@@ -320,6 +328,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
         windowCat.setVisible(true);
     }//GEN-LAST:event_smCatProductoActionPerformed
 
+    private void smProductListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smProductListActionPerformed
+        FrmProductoList ventanaProductoList = new FrmProductoList();
+        agregarVentanaPanel(ventanaProductoList);
+    }//GEN-LAST:event_smProductListActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -358,7 +371,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu mSuministros;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JPanel panelCuerpo;
-    javax.swing.JDesktopPane panelEscritorio;
+    private javax.swing.JDesktopPane panelEscritorio;
     private com.vainilla.apariencia.PanelRedondeado panelRedondeado2;
     private javax.swing.JMenuItem smAncheta;
     private javax.swing.JMenuItem smCatProducto;
@@ -367,6 +380,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem smDashBoard;
     private javax.swing.JMenuItem smPedidos;
     private javax.swing.JMenuItem smProduct;
+    private javax.swing.JMenuItem smProductList;
     private javax.swing.JMenuItem smProveedor;
     private javax.swing.JMenuItem smSalir;
     // End of variables declaration//GEN-END:variables

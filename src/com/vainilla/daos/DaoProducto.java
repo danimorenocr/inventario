@@ -64,10 +64,13 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
             if (orden.isEmpty()) {
                 orden = "p.cod_producto";
             }
-            cadenaSql = "SELECT cod_producto, nombre, num_cajas, num_unidad_cajas, "
-                    + "precio_caja, precio_unidad, precio_total_compra, envio, precio_final, fecha_compra, fecha_vencimiento, stock, "
-                    + "tamanno, precioMetro, precio_unidad_con_envio, cod_proveedor, cod_categoria"
-                    + "FROM productos p ORDER BY " + orden;
+            cadenaSql = "SELECT cod_producto, nombre, num_cajas, num_unidad_cajas, precio_caja, "
+                    + "precio_unidad, precio_total_compra, envio, precio_final, fecha_compra, fecha_vencimiento, stock, tamanno, "
+                    + "precioMetro, precio_unidad_con_envio, c.cod_categoria, c.nombre_categoria, s.cod_proveedor, s.nombre_proveedor FROM productos p INNER JOIN proveedores s "
+                    + "ON p.cod_proveedor = s.cod_proveedor "
+                    + "INNER JOIN categoria_productos c "
+                    + "ON p.cod_categoria = c.cod_categoria "
+                    + "ORDER BY " + orden;
 
             consulta = objConexion.prepareStatement(cadenaSql);
 
@@ -91,17 +94,19 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
                 Double tamanno = registros.getDouble(13);
                 Integer precioMetro = registros.getInt(14);
                 Integer precioUnidadConEnvio = registros.getInt(15);
-                Integer codProveedor = registros.getInt(16);
-                Integer codCat = registros.getInt(17);
+                Integer codCat = registros.getInt(16);
+                String nomCat = registros.getString(17);
+                Integer codProveedor = registros.getInt(18);
+                String nomProveedor = registros.getString(19);
 
-                Proveedor objProveedor = new Proveedor(codProveedor, "", "", "", 0);
-                CategoriaProducto objCat = new CategoriaProducto(codCat, "", 0);
+                Proveedor objProveedor = new Proveedor(codProveedor, nomProveedor, "", "", 0);
+                CategoriaProducto objCat = new CategoriaProducto(codCat, nomCat, 0);
 
                 Producto objProducto = new Producto(codProducto, nombre, numCajas, numUniCajas, precioCaja, precioUnidad, precioTotalCompra, envio,
                         precioFinal, fCompra, fVencimiento, stock, tamanno, precioMetro, precioUnidadConEnvio, objCat, objProveedor);
                 arrayProducto.add(objProducto);
-
             }
+            System.out.println("array -> " + arrayProducto);
             objConexion.close();
             return arrayProducto;
 

@@ -2,7 +2,6 @@ package com.vainilla.daos;
 
 import com.vainilla.configuracion.Conexion;
 import com.vainilla.entidades.CategoriaProducto;
-import com.vainilla.entidades.Proveedor;
 import com.vainilla.interfaces.Funcionalidad;
 import java.sql.SQLException;
 import java.util.ArrayList;
