@@ -15,7 +15,7 @@ public class DaoProveedor extends Conexion implements Funcionalidad<Proveedor> {
     public boolean registrar(Proveedor elObjeto) {
         try {
             cadenaSql = "INSERT INTO proveedores "
-                    + "(nombre, ciudad, telefono) "
+                    + "(nombre_proveedor, ciudad, telefono) "
                     + "VALUES (?,?,?);";
 
             consulta = objConexion.prepareStatement(cadenaSql);
@@ -43,7 +43,7 @@ public class DaoProveedor extends Conexion implements Funcionalidad<Proveedor> {
             if (orden.isEmpty()) {
                 orden = "p.cod_proveedor";
             }
-            cadenaSql = "SELECT cod_proveedor, nombre, ciudad, telefono, "
+            cadenaSql = "SELECT cod_proveedor, nombre_proveedor, ciudad, telefono, "
                     + "(SELECT COUNT(cod_proveedor) FROM productos WHERE cod_proveedor = p.cod_proveedor) AS cantProductos "
                     + "FROM proveedores p ORDER BY " + orden;
 
@@ -76,7 +76,7 @@ public class DaoProveedor extends Conexion implements Funcionalidad<Proveedor> {
     @Override
     public Proveedor buscar(Integer llavePrimaria) {
         try {
-            cadenaSql = "SELECT cod_proveedor, nombre, ciudad, telefono, "
+            cadenaSql = "SELECT cod_proveedor, nombre_proveedor, ciudad, telefono, "
                     + "(SELECT COUNT(cod_proveedor) FROM productos WHERE cod_proveedor = p.cod_proveedor) AS cantProductos "
                     + "FROM proveedores p WHERE p.cod_proveedor = ? ";
 
@@ -124,7 +124,7 @@ public class DaoProveedor extends Conexion implements Funcionalidad<Proveedor> {
     @Override
     public Boolean actualizar(Proveedor elObjeto) {
         try {
-            cadenaSql = "UPDATE proveedores SET nombre = ?,"
+            cadenaSql = "UPDATE proveedores SET nombre_proveedor = ?,"
                     + "ciudad = ?, telefono = ? "
                     + "WHERE cod_proveedor = ?";
 
@@ -169,7 +169,7 @@ public class DaoProveedor extends Conexion implements Funcionalidad<Proveedor> {
     public List<Proveedor> buscarDato(String dato, String campo) {
         try {
 
-            cadenaSql = "SELECT cod_proveedor, nombre, ciudad, telefono, "
+            cadenaSql = "SELECT cod_proveedor, nombre_proveedor, ciudad, telefono, "
                     + "(SELECT COUNT(cod_proveedor) FROM productos WHERE cod_proveedor = p.cod_proveedor) AS cantProductos "
                     + "FROM proveedores p WHERE " + campo + " LIKE ? ";
             System.out.println("cadena: " + cadenaSql);

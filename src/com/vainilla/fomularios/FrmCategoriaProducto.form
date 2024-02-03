@@ -103,10 +103,7 @@
                       <Component id="jLabel8" min="-2" pref="70" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="lblTotal" min="-2" pref="240" max="-2" attributes="0"/>
-                              <EmptySpace pref="221" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="lblTotal" alignment="0" min="-2" pref="240" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="cmbBuscar" min="-2" pref="194" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>

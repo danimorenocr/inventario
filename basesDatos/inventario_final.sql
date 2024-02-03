@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-02-2024 a las 02:59:41
+-- Tiempo de generación: 02-02-2024 a las 23:36:12
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.0.28
 
@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `anchetas` (
   `cod_ancheta` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
+  `nombre_ancheta` varchar(100) NOT NULL,
   `tipo_ancheta` varchar(10) NOT NULL,
   `cant_productos` int(11) NOT NULL,
   `precio_parcial` int(11) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE `categoria_productos` (
 -- Volcado de datos para la tabla `categoria_productos`
 --
 
-INSERT INTO `categoria_productos` (`cod_categoria`, `nombre`) VALUES
+INSERT INTO `categoria_productos` (`cod_categoria`, `nombre_categoria`) VALUES
 (15, 'GLOBOS '),
 (16, 'ESFERAS ACRILICAS '),
 (17, 'CINTAS'),
@@ -70,7 +70,7 @@ INSERT INTO `categoria_productos` (`cod_categoria`, `nombre`) VALUES
 
 CREATE TABLE `clientes` (
   `cod_cliente` int(11) NOT NULL,
-  `nombre` varchar(100) DEFAULT NULL,
+  `nombre_cliente` varchar(100) DEFAULT NULL,
   `telefono` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -103,7 +103,7 @@ CREATE TABLE `pedido` (
 
 CREATE TABLE `productos` (
   `cod_producto` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
+  `nombre_producto` varchar(100) NOT NULL,
   `num_cajas` int(11) DEFAULT NULL,
   `num_unidad_cajas` int(11) DEFAULT NULL,
   `precio_caja` int(11) DEFAULT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE `productos` (
 -- Volcado de datos para la tabla `productos`
 --
 
-INSERT INTO `productos` (`cod_producto`, `nombre`, `num_cajas`, `num_unidad_cajas`, `precio_caja`, `precio_unidad`, `precio_total_compra`, `envio`, `precio_final`, `fecha_compra`, `fecha_vencimiento`, `stock`, `tamanno`, `precioMetro`, `precio_unidad_con_envio`, `cod_proveedor`, `cod_categoria`) VALUES
+INSERT INTO `productos` (`cod_producto`, `nombre_producto`, `num_cajas`, `num_unidad_cajas`, `precio_caja`, `precio_unidad`, `precio_total_compra`, `envio`, `precio_final`, `fecha_compra`, `fecha_vencimiento`, `stock`, `tamanno`, `precioMetro`, `precio_unidad_con_envio`, `cod_proveedor`, `cod_categoria`) VALUES
 (1, 'OSO', 0, 0, 0, 50000, 50000, 2000, 52000, '2017-11-10', '2024-01-06', 1, 0.00, 0, 52000, 9, 20);
 
 -- --------------------------------------------------------
@@ -147,7 +147,7 @@ CREATE TABLE `productos_anchetas` (
 
 CREATE TABLE `proveedores` (
   `cod_proveedor` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
+  `nombre_proveedor` varchar(100) NOT NULL,
   `ciudad` varchar(100) NOT NULL,
   `telefono` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -156,7 +156,7 @@ CREATE TABLE `proveedores` (
 -- Volcado de datos para la tabla `proveedores`
 --
 
-INSERT INTO `proveedores` (`cod_proveedor`, `nombre`, `ciudad`, `telefono`) VALUES
+INSERT INTO `proveedores` (`cod_proveedor`, `nombre_proveedor`, `ciudad`, `telefono`) VALUES
 (9, 'BOGOTA ', 'BOGOTA ', '3112155118'),
 (10, 'MILGER PAPELERIA ', 'BOGOTA ', '3163973329'),
 (11, 'CENTRO ', 'TUNJA', '3112185118');

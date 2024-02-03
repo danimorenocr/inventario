@@ -17,7 +17,7 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
     @Override
     public boolean registrar(Producto elObjeto) {
         try {
-            cadenaSql = "INSERT INTO productos (nombre, num_cajas, num_unidad_cajas, "
+            cadenaSql = "INSERT INTO productos (nombre_producto, num_cajas, num_unidad_cajas, "
                     + "precio_caja, precio_unidad, precio_total_compra, envio, precio_final, fecha_compra, fecha_vencimiento, stock, "
                     + "tamanno, precioMetro, precio_unidad_con_envio, cod_proveedor, cod_categoria) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -64,7 +64,7 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
             if (orden.isEmpty()) {
                 orden = "p.cod_producto";
             }
-            cadenaSql = "SELECT cod_producto, nombre, num_cajas, num_unidad_cajas, precio_caja, "
+            cadenaSql = "SELECT cod_producto, nombre_producto, num_cajas, num_unidad_cajas, precio_caja, "
                     + "precio_unidad, precio_total_compra, envio, precio_final, fecha_compra, fecha_vencimiento, stock, tamanno, "
                     + "precioMetro, precio_unidad_con_envio, c.cod_categoria, c.nombre_categoria, s.cod_proveedor, s.nombre_proveedor FROM productos p INNER JOIN proveedores s "
                     + "ON p.cod_proveedor = s.cod_proveedor "
@@ -120,10 +120,12 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
     @Override
     public Producto buscar(Integer llavePrimaria) {
         try {
-            cadenaSql = "SELECT cod_producto, nombre, proveedor, num_cajas, num_unidad_cajas, "
-                    + "precio_caja, precio_unidad, precio_total_compra, envio, precio_final, fecha_compra, fecha_vencimiento, stock, "
-                    + "tamanno, precioMetro, precio_unidad_con_envio, cod_proveedor, cod_categoria"
-                    + "FROM productos p WHERE p.cod_producto = ? ";
+            cadenaSql = "SELECT cod_producto, nombre_producto, num_cajas, num_unidad_cajas, precio_caja, "
+                    + "precio_unidad, precio_total_compra, envio, precio_final, fecha_compra, fecha_vencimiento, stock, tamanno, "
+                    + "precioMetro, precio_unidad_con_envio, c.cod_categoria, c.nombre_categoria, s.cod_proveedor, s.nombre_proveedor FROM productos p INNER JOIN proveedores s "
+                    + "ON p.cod_proveedor = s.cod_proveedor "
+                    + "INNER JOIN categoria_productos c "
+                    + "ON p.cod_categoria = c.cod_categoria WHERE p.cod_producto = ? ";
 
             consulta = objConexion.prepareStatement(cadenaSql);
             consulta.setInt(1, llavePrimaria);
@@ -147,11 +149,13 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
                 Double tamanno = registros.getDouble(13);
                 Integer precioMetro = registros.getInt(14);
                 Integer precioUnidadConEnvio = registros.getInt(15);
-                Integer codProveedor = registros.getInt(16);
-                Integer codCat = registros.getInt(17);
+                Integer codCat = registros.getInt(16);
+                String nomCat = registros.getString(17);
+                Integer codProveedor = registros.getInt(18);
+                String nomProveedor = registros.getString(19);
 
-                Proveedor objProveedor = new Proveedor(codProveedor, "", "", "", 0);
-                CategoriaProducto objCat = new CategoriaProducto(codCat, "", 0);
+                Proveedor objProveedor = new Proveedor(codProveedor, nomProveedor, "", "", 0);
+                CategoriaProducto objCat = new CategoriaProducto(codCat, nomCat, 0);
 
                 objProducto = new Producto(codProducto, nombre, numCajas, numUniCajas, precioCaja, precioUnidad, precioTotalCompra, envio,
                         precioFinal, fCompra, fVencimiento, stock, tamanno, precioMetro, precioUnidadConEnvio, objCat, objProveedor);
@@ -169,7 +173,18 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
 
     @Override
     public Boolean eliminar(Integer llavePrimaria) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+         try {
+            cadenaSql = "DELETE FROM productos WHERE cod_producto = ?";
+            consulta = objConexion.prepareStatement(cadenaSql);
+            consulta.setInt(1, llavePrimaria);
+            cantidad = consulta.executeUpdate();
+            objConexion.close();
+            return cantidad > 0;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoProveedor.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
     @Override
@@ -179,17 +194,34 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
 
     @Override
     public Integer totalRegistros() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            cadenaSql = "SELECT COUNT(cod_producto) FROM productos";
+            consulta = objConexion.prepareStatement(cadenaSql);
+
+            registros = consulta.executeQuery();
+            while (registros.next()) {
+                cantidad = registros.getInt(1);
+            }
+
+            objConexion.close();
+            return cantidad;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoProveedor.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
     }
 
     @Override
     public List<Producto> buscarDato(String dato, String campo) {
         try {
 
-            cadenaSql = "SELECT cod_producto, nombre, num_cajas, num_unidad_cajas, "
-                    + "precio_caja, precio_unidad, precio_total_compra, envio, precio_final, fecha_compra, fecha_vencimiento, stock, "
-                    + "tamanno, precioMetro, precio_unidad_con_envio, cod_proveedor, cod_categoria "
-                    + "FROM productos p WHERE " + campo + " LIKE ? ";
+            cadenaSql = "SELECT cod_producto, nombre_producto, num_cajas, num_unidad_cajas, precio_caja, "
+                    + "precio_unidad, precio_total_compra, envio, precio_final, fecha_compra, fecha_vencimiento, stock, tamanno, "
+                    + "precioMetro, precio_unidad_con_envio, c.cod_categoria, c.nombre_categoria, s.cod_proveedor, s.nombre_proveedor FROM productos p INNER JOIN proveedores s "
+                    + "ON p.cod_proveedor = s.cod_proveedor "
+                    + "INNER JOIN categoria_productos c "
+                    + "ON p.cod_categoria = c.cod_categoria WHERE " + campo + " LIKE ? ";
 
             consulta = objConexion.prepareStatement(cadenaSql);
             consulta.setString(1, dato);
@@ -213,11 +245,13 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
                 Double tamanno = registros.getDouble(13);
                 Integer precioMetro = registros.getInt(14);
                 Integer precioUnidadConEnvio = registros.getInt(15);
-                Integer codProveedor = registros.getInt(16);
-                Integer codCat = registros.getInt(17);
+                Integer codCat = registros.getInt(16);
+                String nomCat = registros.getString(17);
+                Integer codProveedor = registros.getInt(18);
+                String nomProveedor = registros.getString(19);
 
-                Proveedor objProveedor = new Proveedor(codProveedor, "", "", "", 0);
-                CategoriaProducto objCat = new CategoriaProducto(codCat, "", 0);
+                Proveedor objProveedor = new Proveedor(codProveedor, nomProveedor, "", "", 0);
+                CategoriaProducto objCat = new CategoriaProducto(codCat, nomCat, 0);
 
                 Producto objProducto = new Producto(codProducto, nombre, numCajas, numUniCajas, precioCaja, precioUnidad, precioTotalCompra, envio,
                         precioFinal, fCompra, fVencimiento, stock, tamanno, precioMetro, precioUnidadConEnvio, objCat, objProveedor);

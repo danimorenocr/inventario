@@ -65,7 +65,7 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
 
         List<CategoriaProducto> arrayCat;
         DaoCategoriaProducto dao = new DaoCategoriaProducto();
-        arrayCat = dao.buscarDato(nombre, "nombre");
+        arrayCat = dao.buscarDato(nombre, "nombre_categoria");
         System.out.println("datos: " + arrayCat);
 
         if (arrayCat.isEmpty()) {
@@ -123,7 +123,7 @@ public class FrmCategoriaProducto extends javax.swing.JDialog {
                 campo = "cod_categoria";
             }
             case 1 -> {
-                campo = "nombre";
+                campo = "nombre_categoria";
             }
             default ->
                 throw new AssertionError();

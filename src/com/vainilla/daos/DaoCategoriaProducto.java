@@ -15,7 +15,7 @@ public class DaoCategoriaProducto extends Conexion implements Funcionalidad<Cate
     public boolean registrar(CategoriaProducto elObjeto) {
         try {
             cadenaSql = "INSERT INTO categoria_productos "
-                    + "(nombre) "
+                    + "(nombre_categoria) "
                     + "VALUES (?);";
 
             consulta = objConexion.prepareStatement(cadenaSql);
@@ -40,7 +40,7 @@ public class DaoCategoriaProducto extends Conexion implements Funcionalidad<Cate
             if (orden.isEmpty()) {
                 orden = "c.cod_categoria";
             }
-            cadenaSql = "SELECT cod_categoria, nombre, "
+            cadenaSql = "SELECT cod_categoria, nombre_categoria, "
                     + "(SELECT COUNT(cod_categoria) FROM productos WHERE cod_categoria = c.cod_categoria) AS cantProductos "
                     + "FROM categoria_productos c ORDER BY " + orden;
 
@@ -71,7 +71,7 @@ public class DaoCategoriaProducto extends Conexion implements Funcionalidad<Cate
     @Override
     public CategoriaProducto buscar(Integer llavePrimaria) {
         try {
-            cadenaSql = "SELECT cod_categoria, nombre, "
+            cadenaSql = "SELECT cod_categoria, nombre_categoria, "
                     + "(SELECT COUNT(cod_categoria) FROM productos WHERE cod_categoria = c.cod_categoria) AS cantProductos "
                     + "FROM categoria_productos c WHERE c.cod_categoria = ? ";
 
@@ -117,7 +117,7 @@ public class DaoCategoriaProducto extends Conexion implements Funcionalidad<Cate
     @Override
     public Boolean actualizar(CategoriaProducto elObjeto) {
           try {
-            cadenaSql = "UPDATE categoria_productos SET nombre = ? "
+            cadenaSql = "UPDATE categoria_productos SET nombre_categoria = ? "
                 
                     + "WHERE cod_categoria = ?";
 
@@ -160,7 +160,7 @@ public class DaoCategoriaProducto extends Conexion implements Funcionalidad<Cate
     public List<CategoriaProducto> buscarDato(String dato, String campo) {
         try {
 
-            cadenaSql = "SELECT cod_categoria, nombre, "
+            cadenaSql = "SELECT cod_categoria, nombre_categoria, "
                     + "(SELECT COUNT(cod_categoria) FROM productos WHERE cod_categoria = c.cod_categoria) AS cantProductos "
                     + "FROM categoria_productos c WHERE " + campo + " LIKE ? ";
             System.out.println("cadena: " + cadenaSql);

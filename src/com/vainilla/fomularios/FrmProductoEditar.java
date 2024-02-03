@@ -29,7 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-public class FrmProducto extends javax.swing.JInternalFrame {
+public class FrmProductoEditar extends javax.swing.JInternalFrame {
 
     private Map<Integer, Integer> losCodigosCat = new HashMap<>();
     private Map<Integer, Integer> losCodigosProv = new HashMap<>();
@@ -40,7 +40,7 @@ public class FrmProducto extends javax.swing.JInternalFrame {
 
     NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
-    public FrmProducto() {
+    public FrmProductoEditar() {
         initComponents();
         cmbCat.setModel(modeloComboCat);
         cmbProveedor.setModel(modeloComboProv);

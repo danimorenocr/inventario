@@ -44,7 +44,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="panelContenedor" max="32767" attributes="0"/>
+                  <Component id="panelCuerpo" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -53,14 +53,14 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="panelContenedor" min="-2" max="-2" attributes="0"/>
+                  <Component id="panelCuerpo" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="panelContenedor">
+        <Container class="javax.swing.JPanel" name="panelCuerpo">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
@@ -162,11 +162,24 @@
                   <Font name="Fredoka" size="14" style="0"/>
                 </Property>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="4">
-                    <StringItem index="0" value="Codigo"/>
-                    <StringItem index="1" value="Nombre"/>
-                    <StringItem index="2" value="Telefono"/>
-                    <StringItem index="3" value="Ciudad"/>
+                  <StringArray count="17">
+                    <StringItem index="0" value="Categoria"/>
+                    <StringItem index="1" value="Codigo"/>
+                    <StringItem index="2" value="Costo de la caja"/>
+                    <StringItem index="3" value="Costo del envio"/>
+                    <StringItem index="4" value="Costo de la unidad"/>
+                    <StringItem index="5" value="Costo unidad + envio"/>
+                    <StringItem index="6" value="Costo final"/>
+                    <StringItem index="7" value="Costo total de la compra"/>
+                    <StringItem index="8" value="Fecha de compra"/>
+                    <StringItem index="9" value="Fecha de vencimiento"/>
+                    <StringItem index="10" value="Nombre"/>
+                    <StringItem index="11" value="Numero de cajas"/>
+                    <StringItem index="12" value="Precio x metro"/>
+                    <StringItem index="13" value="Proveedor"/>
+                    <StringItem index="14" value="Stock"/>
+                    <StringItem index="15" value="Tama&#xf1;o"/>
+                    <StringItem index="16" value="Unidades por caja"/>
                   </StringArray>
                 </Property>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
@@ -230,6 +243,9 @@
                       </Table>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tablaDatosMouseClicked"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>

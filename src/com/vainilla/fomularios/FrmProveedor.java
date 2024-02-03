@@ -46,7 +46,7 @@ public class FrmProveedor extends javax.swing.JInternalFrame {
 
         List<Proveedor> arrayProv;
         DaoProveedor dao = new DaoProveedor();
-        arrayProv = dao.buscarDato(nombre, "nombre");
+        arrayProv = dao.buscarDato(nombre, "nombre_proveedor");
         System.out.println("datos: " + arrayProv);
 
         if (arrayProv.isEmpty()) {
@@ -223,7 +223,7 @@ public class FrmProveedor extends javax.swing.JInternalFrame {
                 campo = "cod_proveedor";
             }
             case 1 -> {
-                campo = "nombre";
+                campo = "nombre_proveedor";
             }
             case 2 -> {
                 campo = "telefono";
