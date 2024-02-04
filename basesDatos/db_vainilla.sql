@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-02-2024 a las 23:36:12
+-- Tiempo de generación: 04-02-2024 a las 18:43:43
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.0.28
 
@@ -60,7 +60,8 @@ INSERT INTO `categoria_productos` (`cod_categoria`, `nombre_categoria`) VALUES
 (17, 'CINTAS'),
 (18, 'ESFERAS PLASTICAS'),
 (19, 'RESMA FOTOGRAF'),
-(20, 'PELUCHES');
+(20, 'PELUCHES'),
+(21, 'MANILLAS');
 
 -- --------------------------------------------------------
 
@@ -118,15 +119,17 @@ CREATE TABLE `productos` (
   `precioMetro` int(11) DEFAULT NULL,
   `precio_unidad_con_envio` int(11) NOT NULL,
   `cod_proveedor` int(11) NOT NULL,
-  `cod_categoria` int(11) NOT NULL
+  `cod_categoria` int(11) NOT NULL,
+  `ud_adq_envio` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `productos`
 --
 
-INSERT INTO `productos` (`cod_producto`, `nombre_producto`, `num_cajas`, `num_unidad_cajas`, `precio_caja`, `precio_unidad`, `precio_total_compra`, `envio`, `precio_final`, `fecha_compra`, `fecha_vencimiento`, `stock`, `tamanno`, `precioMetro`, `precio_unidad_con_envio`, `cod_proveedor`, `cod_categoria`) VALUES
-(1, 'OSO', 0, 0, 0, 50000, 50000, 2000, 52000, '2017-11-10', '2024-01-06', 1, 0.00, 0, 52000, 9, 20);
+INSERT INTO `productos` (`cod_producto`, `nombre_producto`, `num_cajas`, `num_unidad_cajas`, `precio_caja`, `precio_unidad`, `precio_total_compra`, `envio`, `precio_final`, `fecha_compra`, `fecha_vencimiento`, `stock`, `tamanno`, `precioMetro`, `precio_unidad_con_envio`, `cod_proveedor`, `cod_categoria`, `ud_adq_envio`) VALUES
+(1, 'OSO', 0, 0, 0, 50000, 50000, 2000, 52000, '2017-11-10', '2024-01-06', 1, 0.00, 0, 52000, 9, 20, 0),
+(3, 'A', 1, 1, 2222, 2222, 2222, 11111, 13333, '2024-02-02', '2024-02-29', 1, 0.00, 0, 13333, 9, 17, 0);
 
 -- --------------------------------------------------------
 
@@ -159,7 +162,8 @@ CREATE TABLE `proveedores` (
 INSERT INTO `proveedores` (`cod_proveedor`, `nombre_proveedor`, `ciudad`, `telefono`) VALUES
 (9, 'BOGOTA ', 'BOGOTA ', '3112155118'),
 (10, 'MILGER PAPELERIA ', 'BOGOTA ', '3163973329'),
-(11, 'CENTRO ', 'TUNJA', '3112185118');
+(11, 'CENTRO ', 'TUNJA', '3112185118'),
+(12, 'MAJO', 'TUNJA', '3112976229');
 
 -- --------------------------------------------------------
 
@@ -238,19 +242,19 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `categoria_productos`
 --
 ALTER TABLE `categoria_productos`
-  MODIFY `cod_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `cod_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `cod_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `cod_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  MODIFY `cod_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `cod_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`

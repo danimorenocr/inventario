@@ -1,9 +1,9 @@
 package com.vainilla.fomularios;
 
 import com.vainilla.daos.DaoProducto;
-import com.vainilla.daos.DaoProveedor;
 import com.vainilla.entidades.Producto;
-import com.vainilla.entidades.Proveedor;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -357,6 +357,7 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tablaDatos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         tablaDatos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaDatosMouseClicked(evt);
@@ -521,6 +522,27 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
 
     private void tablaDatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaDatosMouseClicked
         int columnaSeleccionada = tablaDatos.getSelectedColumn();
+
+        if (columnaSeleccionada == 17) {
+            int filaSeleccionada = tablaDatos.getSelectedRow();
+            String codTexto = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
+            codProducto = Integer.valueOf(codTexto);
+
+            DaoProducto dao = new DaoProducto();
+            Producto objProd = dao.buscar(codProducto);
+
+            FrmProductoEditar floatante = new FrmProductoEditar(null, true, objProd);
+            floatante.setVisible(true);
+
+            floatante.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    cargarDatosProducto("");
+                    lblTotal.setText(armarLineaCantidad());
+                }
+
+            });
+        }
 
         if (columnaSeleccionada == 18) {
             int filaSeleccionada = tablaDatos.getSelectedRow();

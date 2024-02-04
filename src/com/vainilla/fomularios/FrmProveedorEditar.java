@@ -3,13 +3,16 @@ package com.vainilla.fomularios;
 import com.vainilla.daos.DaoProveedor;
 import com.vainilla.entidades.Proveedor;
 import java.awt.Dialog;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 public class FrmProveedorEditar extends javax.swing.JDialog {
 
     private final Proveedor objActualizar;
+ 
 
     public FrmProveedorEditar(java.awt.Frame parent, boolean modal, Proveedor objExterno) {
         super(parent, modal);
@@ -309,7 +312,7 @@ public class FrmProveedorEditar extends javax.swing.JDialog {
 
                 if (dao.actualizar(objActualizar)) {
                     JOptionPane.showMessageDialog(panelCuerpo, "El proveedor fue actualizado", "Información", JOptionPane.INFORMATION_MESSAGE);
-                    
+
                 } else {
                     JOptionPane.showMessageDialog(panelCuerpo, "No se pudo actualizar", "Error", JOptionPane.ERROR_MESSAGE);
                 }

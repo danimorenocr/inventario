@@ -67,7 +67,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         window.setSize(tamannoPanel);
     }
 
-    private void agregarVentanaPanel(JInternalFrame ventana) {
+    public void agregarVentanaPanel(JInternalFrame ventana) {
 
         if (panelEscritorio.getComponentCount() > 0) {
             panelEscritorio.removeAll();

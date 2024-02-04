@@ -7,66 +7,40 @@ import com.vainilla.entidades.CategoriaProducto;
 import com.vainilla.entidades.Producto;
 import com.vainilla.entidades.Proveedor;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.NumberFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Objects;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-public class FrmProductoEditar extends javax.swing.JInternalFrame {
+public class FrmProductoEditar extends javax.swing.JDialog {
 
-    private Map<Integer, Integer> losCodigosCat = new HashMap<>();
-    private Map<Integer, Integer> losCodigosProv = new HashMap<>();
-
-    private DefaultComboBoxModel modeloComboCat = new DefaultComboBoxModel();
-    private DefaultComboBoxModel modeloComboProv = new DefaultComboBoxModel();
-    FrmPrincipal principal = new FrmPrincipal();
-
+    private final Producto objActualizar;
     NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
-    public FrmProductoEditar() {
+    private Map<Integer, Integer> losCodigosProv = new HashMap<>();
+    private Map<Integer, Integer> losCodigosCat = new HashMap<>();
+    private final DefaultComboBoxModel modeloComboProv = new DefaultComboBoxModel();
+    private final DefaultComboBoxModel modeloComboCat = new DefaultComboBoxModel();
+    private Integer indiceProv;
+    private Integer indiceCat;
+
+    public FrmProductoEditar(java.awt.Frame parent, boolean modal, Producto objExterno) {
+        super(parent, modal);
         initComponents();
-        cmbCat.setModel(modeloComboCat);
+        objActualizar = objExterno;
         cmbProveedor.setModel(modeloComboProv);
-        cargarCategoria("nombre_categoria");
+        cmbCat.setModel(modeloComboCat);
         cargarProveedor();
-        cajaDisabled();
-        cargarImg();
-    }
+        cargarCat();
+        cargarDatos();
 
-    private void quitarHeader(JInternalFrame ventana) {
-        BasicInternalFrameUI interUser = (BasicInternalFrameUI) ventana.getUI();
-        interUser.setNorthPane(null);
-    }
-
-
-    private void cargarImg() {
-        try {
-            URL imgU = new URL("https://cdn-icons-png.flaticon.com/128/738/738884.png");
-            Image boxesImg = new ImageIcon(imgU).getImage().getScaledInstance(25, 25, 0);
-            ImageIcon iconoBox = new ImageIcon(boxesImg);
-            lblErrorImg.setIcon(iconoBox);
-            lblErrorImg.setVisible(false);
-
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(FrmPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     private void cargarCategoria(String orden) {
@@ -89,22 +63,159 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
     }
 
     private void cargarProveedor() {
-        List<Proveedor> arrayProv;
-        Integer indice = 0;
 
-        DaoProveedor dao = new DaoProveedor();
-        arrayProv = dao.consultar("nombre_proveedor");
+        List<Proveedor> arrProveedor;
+        int indice = -1;
 
-        losCodigosProv.put(0, 0);
-        modeloComboProv.addElement("SELECCIONE EL PROVEEDOR");
-
-        for (Proveedor proveedor : arrayProv) {
+        DaoProveedor miDao = new DaoProveedor();
+        arrProveedor = miDao.consultar("");
+        for (Proveedor miProv : arrProveedor) {
             indice++;
+            losCodigosProv.put(indice, miProv.getCodProveedor());
+            modeloComboProv.addElement(miProv.getNombreProveedor());
 
-            losCodigosProv.put(indice, proveedor.getCodProveedor());
-            modeloComboProv.addElement(proveedor.getNombreProveedor());
+            if (Objects.equals(objActualizar.getCodProveedor().getCodProveedor(), miProv.getCodProveedor())) {
+                indiceProv = indice;
+            }
+
+        }
+        cmbProveedor.setSelectedIndex(indiceProv);
+    }
+
+    private void cargarCat() {
+
+        List<CategoriaProducto> arrCat;
+        int indice = -1;
+
+        DaoCategoriaProducto miDao = new DaoCategoriaProducto();
+        arrCat = miDao.consultar("");
+        for (CategoriaProducto miCat : arrCat) {
+            indice++;
+            losCodigosCat.put(indice, miCat.getCodCategoria());
+            modeloComboCat.addElement(miCat.getNombreCategoria());
+
+            if (Objects.equals(objActualizar.getCodCategoriaProducto().getCodCategoria(), miCat.getCodCategoria())) {
+                indiceCat = indice;
+            }
+
+        }
+        cmbCat.setSelectedIndex(indiceCat);
+    }
+
+    private void cargarDatos() {
+        cajaNombre.setText(objActualizar.getNombreProducto());
+        fCompra.setDate(objActualizar.getFechaCompra());
+        fVencimiento.setDate(objActualizar.getFechaVencimiento());
+        cajaEnvio.setText(objActualizar.getEnvio().toString());
+        cajaStock.setText(objActualizar.getStock().toString());
+        cajaNumCajas.setText(objActualizar.getNumeroCajas().toString());
+        cajaUnidCajas.setText(objActualizar.getUnidadPorCaja().toString());
+        cajaTamanno.setText(objActualizar.getTamanno().toString());
+        cajaPrecioTotalCaja.setText(objActualizar.getPrecioCaja().toString());
+        cajaTotalProductosEnvio.setText("");
+        cajaPrecioTotal.setText(objActualizar.getPrecioTotalCompra().toString());
+        lblPrecioUnidPaquetes.setText(objActualizar.getPrecioCaja().toString());
+        lblPrecioAcumulado.setText(objActualizar.getPrecioUnidad().toString());
+        lblCostoEnvioUnidad.setText("-");//HACER CALCULO
+        lblPrecioConEnvioUnidad.setText(objActualizar.getPrecioUnidadEnvio().toString());
+        lblPrecioFinal.setText(objActualizar.getPrecioFinal().toString());
+        lblTotalUnidades.setText(objActualizar.getStock().toString());
+        lblPrecioDeUnidad.setText(objActualizar.getPrecioUnidad().toString());
+        lblPrecioUnidad.setText(objActualizar.getPrecioUnidad().toString());
+        lblPrecioMetro.setText(objActualizar.getPrecioMetro().toString());
+//        Integer precioMetr = Integer.valueOf(formatoNatural(lblPrecioMetro.getText()));
+//        Integer precioMetroEnvio = costoEnvioUnidadCaja + precioMetr;
+//        lblTamEnvio.setText(formatoNumero(precioMetroEnvio) + "");
+    }
+
+    private boolean estaTodoBien() {
+        boolean bandera = true;
+        boolean seleccionado = chBoxCaja.isSelected();
+
+        // Definir los campos y sus respectivos nombres para los mensajes de advertencia
+        Object[][] campos = {
+            {cmbProveedor.getSelectedIndex(), "Seleccione un proveedor"},
+            {cmbCat.getSelectedIndex(), "Seleccione una categoría"},
+            {cajaNombre.getText(), "Digite el nombre del producto"},
+            {fCompra.getDate(), "Seleccione una fecha de compra"},
+            {fVencimiento.getDate(), "Seleccione una fecha de vencimiento"},};
+
+        for (Object[] campo : campos) {
+            if (campo[0] == null || campo[0].equals("") || campo[0].equals(0) || campo[0].equals("-")) {
+                bandera = false;
+                JOptionPane.showMessageDialog(panelCuerpo, campo[1], "Advertencia", JOptionPane.WARNING_MESSAGE);
+
+                // Si es un JTextField, coloca el foco en él
+                if (campo[0] instanceof JTextField jTextField) {
+                    jTextField.requestFocus();
+                }
+                return bandera;  // Terminar la validación si encuentra un campo vacío o con un valor no válido
+            }
         }
 
+        if (!seleccionado) {
+            Object[][] camposNoCheck = {
+                {cajaStock.getText(), "Ingrese la cantidad de stock"},
+                {cajaPrecioTotal.getText(), "Ingrese el precio total del producto"},
+                {cajaTamanno.getText(), "Ingrese el tamaño del producto"},
+                {lblPrecioMetro.getText(), "Mensaje correspondiente para lblPrecioMetro"},
+                {lblPrecioUnidad.getText(), "Mensaje correspondiente para lblPrecioUnidad"}
+            };
+
+            for (Object[] campo : camposNoCheck) {
+                if (campo[0] == null || campo[0].equals("") || campo[0].equals(0) || campo[0].equals("-")) {
+                    bandera = false;
+                    JOptionPane.showMessageDialog(panelCuerpo, campo[1], "Advertencia", JOptionPane.WARNING_MESSAGE);
+
+                    if (campo[0] instanceof JTextField jTextField) {
+                        jTextField.requestFocus();
+                    }
+                    return bandera;
+                }
+            }
+        } else {
+            Object[][] camposCheck = {
+                {cajaNumCajas.getText(), "Ingrese el número de cajas"},
+                {cajaUnidCajas.getText(), "Ingrese la cantidad de unidades por caja"},
+                {cajaPrecioTotalCaja.getText(), "Ingrese el precio total de la caja"},
+                {lblPrecioUnidPaquetes.getText(), "Mensaje correspondiente para lblPrecioUnidPaquetes"},
+                {lblTotalUnidades.getText(), "Mensaje correspondiente para lblTotalUnidades"},
+                {lblPrecioDeUnidad.getText(), "Mensaje correspondiente para lblPrecioDeUnidad"},};
+
+            for (Object[] campo : camposCheck) {
+                if (campo[0] == null || campo[0].equals("") || campo[0].equals(0) || campo[0].equals("-")) {
+                    bandera = false;
+                    JOptionPane.showMessageDialog(panelCuerpo, campo[1], "Advertencia", JOptionPane.WARNING_MESSAGE);
+
+                    if (campo[0] instanceof JTextField jTextField) {
+                        jTextField.requestFocus();
+                    }
+                    return bandera;
+                }
+            }
+        }
+
+        Object[][] camposEnvio = {
+            {cajaEnvio.getText(), "Ingrese el costo del envío"},
+            {cajaTotalProductosEnvio.getText(), "Ingrese las unidades adquiridas en el envío"},
+            {lblPrecioAcumulado.getText(), "Mensaje correspondiente para lblPrecioAcumulado"},
+            {lblCostoEnvioUnidad.getText(), "Mensaje correspondiente para lblCostoEnvioUnidad"},
+            {lblPrecioConEnvioUnidad.getText(), "Mensaje correspondiente para lblPrecioConEnvioUnidad"},
+            {lblPrecioFinal.getText(), "Mensaje correspondiente para lblPrecioFinal"},};
+
+        for (Object[] campo : camposEnvio) {
+            if (campo[0] == null || campo[0].equals("") || campo[0].equals(0) || campo[0].equals("-")) {
+                bandera = false;
+                JOptionPane.showMessageDialog(panelCuerpo, campo[1], "Advertencia", JOptionPane.WARNING_MESSAGE);
+
+                if (campo[0] instanceof JTextField jTextField) {
+                    jTextField.requestFocus();
+                }
+                return bandera;
+            }
+        }
+
+        return bandera;
     }
 
     private boolean verificarNombre(String nombre) {
@@ -120,187 +231,6 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
         }
         System.out.println("existencia: " + existencia);
         return existencia;
-    }
-
-    private void borrarDatos() {
-        cmbCat.setSelectedIndex(0);
-        cmbProveedor.setSelectedIndex(0);
-        cajaNombre.setText("");
-        fCompra.setDate(null);
-        fVencimiento.setDate(null);
-        cajaEnvio.setText("");
-        cajaStock.setText("");
-        cajaNumCajas.setText("");
-        cajaUnidCajas.setText("");
-        cajaTamanno.setText("");
-        cajaPrecioTotalCaja.setText("");
-        cajaTotalProductosEnvio.setText("");
-        cajaPrecioTotal.setText("");
-        lblPrecioUnidPaquetes.setText("-");
-        lblPrecioAcumulado.setText("-");
-        lblCostoEnvioUnidad.setText("-");
-        lblPrecioConEnvioUnidad.setText("-");
-        lblPrecioFinal.setText("-");
-        lblTotalUnidades.setText("-");
-        lblPrecioDeUnidad.setText("-");
-        lblPrecioUnidad.setText("-");
-        chBoxCaja.setSelected(false);
-        lblPrecioMetro.setText("-");
-        lblTamEnvio.setText("-");
-        cajaDisabled();
-    }
-
-    private void borrarCostos() {
-
-        cajaEnvio.setText("");
-        cajaStock.setText("");
-        cajaNumCajas.setText("");
-        cajaUnidCajas.setText("");
-        cajaTamanno.setText("");
-        cajaPrecioTotalCaja.setText("");
-        cajaTotalProductosEnvio.setText("");
-        cajaPrecioTotal.setText("");
-        lblPrecioUnidPaquetes.setText("-");
-        lblPrecioAcumulado.setText("-");
-        lblCostoEnvioUnidad.setText("-");
-        lblPrecioConEnvioUnidad.setText("-");
-        lblPrecioFinal.setText("-");
-        lblTotalUnidades.setText("-");
-        lblPrecioDeUnidad.setText("-");
-        lblPrecioUnidad.setText("-");
-    }
-
-    private Boolean estaTodoBien() {
-        Boolean bandera = true;
-
-        Integer seleccionadoCat = cmbCat.getSelectedIndex();
-        Integer seleccionadoProv = cmbProveedor.getSelectedIndex();
-        String nombre = cajaNombre.getText();
-        Date fechaCompra = fCompra.getDate();
-        Date fechaVencimiento = fVencimiento.getDate();
-        Integer stock = Integer.valueOf(cajaStock.getText());
-        Integer totalUnidad = Integer.valueOf(lblTotalUnidades.getText());
-        Integer precioTotal = Integer.valueOf(cajaPrecioTotal.getText());
-        Integer precioUnid = Integer.valueOf(lblPrecioUnidad.getText());
-        Integer precioUnidCaja = Integer.valueOf(lblPrecioDeUnidad.getText());
-        Integer precioTotalCajas = Integer.valueOf(cajaPrecioTotalCaja.getText());
-        Integer envio = Integer.valueOf(cajaEnvio.getText());
-        Integer totalProductos = Integer.valueOf(cajaTotalProductosEnvio.getText());
-        Integer tam = Integer.valueOf(cajaTamanno.getText());
-        Integer precioUnidadConEnvio = Integer.valueOf(lblPrecioConEnvioUnidad.getText());
-        Integer precioFinal = Integer.valueOf(lblPrecioFinal.getText());
-
-        if (seleccionadoCat == 0) {
-            bandera = false;
-            JOptionPane.showMessageDialog(panelCuerpo, "Seleccione una categoria",
-                    "Advertencia", JOptionPane.WARNING_MESSAGE);
-        } else {
-
-            if (nombre.equals("")) {
-                bandera = false;
-                JOptionPane.showMessageDialog(panelCuerpo, "Digite el nombre del producto",
-                        "Advertencia", JOptionPane.WARNING_MESSAGE);
-                cajaNombre.requestFocus();
-
-            } else {
-                if (seleccionadoProv == 0) {
-                    bandera = false;
-                    JOptionPane.showMessageDialog(panelCuerpo, "Seleccione un proveedor",
-                            "Advertencia", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    if (fechaCompra == null) {
-                        bandera = false;
-                        JOptionPane.showMessageDialog(panelCuerpo, "Seleccione una fecha de compra",
-                                "Advertencia", JOptionPane.WARNING_MESSAGE);
-                    } else {
-                        if (fechaVencimiento == null) {
-                            bandera = false;
-                            JOptionPane.showMessageDialog(panelCuerpo, "Seleccione una fecha de vencimiento",
-                                    "Advertencia", JOptionPane.WARNING_MESSAGE);
-                        } else {
-                            if (stock == null && totalUnidad == null) {
-                                bandera = false;
-                                JOptionPane.showMessageDialog(panelCuerpo, "Ingrese la cantidad de productos",
-                                        "Advertencia", JOptionPane.WARNING_MESSAGE);
-                            } else {
-                                if (precioTotal == null) {
-                                    bandera = false;
-                                    JOptionPane.showMessageDialog(panelCuerpo, "Ingrese el precio total de la compra",
-                                            "Advertencia", JOptionPane.WARNING_MESSAGE);
-                                } else {
-                                    if (precioUnid.equals("") && precioUnidCaja.equals("")) {
-                                        bandera = false;
-                                        JOptionPane.showMessageDialog(panelCuerpo, "Ingrese el costo de la unidad",
-                                                "Advertencia", JOptionPane.WARNING_MESSAGE);
-                                    } else {
-                                        if (precioTotalCajas.equals("")) {
-                                            bandera = false;
-                                            JOptionPane.showMessageDialog(panelCuerpo, "Ingrese la cantidad de productos",
-                                                    "Advertencia", JOptionPane.WARNING_MESSAGE);
-                                        } else {
-                                            if (envio.equals("")) {
-                                                bandera = false;
-                                                JOptionPane.showMessageDialog(panelCuerpo, "Ingrese el costo del envio",
-                                                        "Advertencia", JOptionPane.WARNING_MESSAGE);
-                                            } else {
-                                                if (totalProductos.equals("")) {
-                                                    bandera = false;
-                                                    JOptionPane.showMessageDialog(panelCuerpo, "Ingrese las unidades adquiridas en el envio",
-                                                            "Advertencia", JOptionPane.WARNING_MESSAGE);
-                                                } else {
-                                                    if (tam.equals("")) {
-                                                        lblPrecioMetro.setText("0");
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
-        return bandera;
-    }
-
-    //EL TEXTO CONTIENE EL FORMATO DE MONEDA CON LA SEPARACION DE CIFRAS CORRESPONDIENTES
-    public String formatoNumero(int numero) {
-        String forma = formatoMoneda.format(numero).replace(",00", "");
-        return forma;
-    }
-
-    //LA VARIABLE SE TRANSFORMA DE FORMATO DE MONEDAD A NATURAL
-    public String formatoNatural(String numero) {
-        return numero.replaceAll("[^0-9]", "");
-    }
-
-    private void stockDisabled() {
-        cajaStock.setEnabled(false);
-        cajaTamanno.setEnabled(false);
-        cajaPrecioTotal.setEnabled(false);
-        panelStock.setBackground(Color.WHITE);
-
-        panelCaja.setBackground(new Color(255, 251, 227));
-        cajaNumCajas.setEnabled(true);
-        cajaPrecioTotalCaja.setEnabled(true);
-        cajaUnidCajas.setEnabled(true);
-    }
-
-    private void cajaDisabled() {
-        cajaNumCajas.setEnabled(false);
-        cajaPrecioTotalCaja.setEnabled(false);
-        cajaUnidCajas.setEnabled(false);
-        panelCaja.setBackground(Color.WHITE);
-
-        panelStock.setBackground(new Color(255, 251, 227));
-        cajaStock.setEnabled(true);
-        cajaTamanno.setEnabled(true);
-        cajaPrecioTotal.setEnabled(true);
-
     }
 
     private void stockCargar() {
@@ -341,6 +271,16 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
             cargarCostos();
         } catch (NumberFormatException e) {
         }
+    }
+
+    public String formatoNumero(int numero) {
+        String forma = formatoMoneda.format(numero).replace(",00", "");
+        return forma;
+    }
+
+    //LA VARIABLE SE TRANSFORMA DE FORMATO DE MONEDAD A NATURAL
+    public String formatoNatural(String numero) {
+        return numero.replaceAll("[^0-9]", "");
     }
 
     private void cargarCostos() {
@@ -405,22 +345,6 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
 
             }
         } catch (NumberFormatException e) {
-        }
-
-    }
-
-    private void asignarValorDefaultSiEstaVacio(JTextField textField) {
-        // Verificar si el TextField está vacío y asignar 0 si es el caso
-        if (textField.getText().isEmpty()) {
-            textField.setText("0");
-        }
-    }
-
-    private void asignarValorDefaultSiEstaVacioLabel(JLabel label) {
-        // Verificar si el TextField está vacío y asignar 0 si es el caso
-
-        if (label.getText().equals("-")) {
-            label.setText("0");
         }
 
     }
@@ -490,7 +414,8 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
         lblErrorImg = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         btnBorrar = new javax.swing.JButton();
-        btnVer = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 204));
 
@@ -603,9 +528,6 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
                             .addComponent(lblPrecioMetro, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(14, 14, 14))
         );
-
-        panelStockLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cajaPrecioTotal, cajaStock, cajaTamanno, lblPrecioMetro, lblPrecioUnidad});
-
         panelStockLayout.setVerticalGroup(
             panelStockLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelStockLayout.createSequentialGroup()
@@ -635,8 +557,6 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
                         .addComponent(lblPrecioMetro, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(11, 11, 11))
         );
-
-        panelStockLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {cajaPrecioTotal, cajaStock, cajaTamanno, lblPrecioMetro, lblPrecioUnidad});
 
         panelCaja.setBackground(new java.awt.Color(255, 251, 227));
 
@@ -745,9 +665,6 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
                             .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
-
-        panelCajaLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {lblPrecioDeUnidad, lblPrecioUnidPaquetes, lblTotalUnidades});
-
         panelCajaLayout.setVerticalGroup(
             panelCajaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCajaLayout.createSequentialGroup()
@@ -780,8 +697,6 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
                     .addComponent(lblPrecioDeUnidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(21, 21, 21))
         );
-
-        panelCajaLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {lblPrecioDeUnidad, lblPrecioUnidPaquetes, lblTotalUnidades});
 
         panelBasico.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -892,9 +807,6 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        panelBasicoLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cajaNombre, cmbCat});
-
         panelBasicoLayout.setVerticalGroup(
             panelBasicoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelBasicoLayout.createSequentialGroup()
@@ -926,8 +838,6 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
                 .addComponent(chBoxCaja)
                 .addContainerGap(21, Short.MAX_VALUE))
         );
-
-        panelBasicoLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {cajaNombre, cmbCat});
 
         btnAgregar.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
         btnAgregar.setText("Agregar");
@@ -1024,8 +934,24 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
             .addGroup(panelEnvioLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelEnvioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelEnvioLayout.createSequentialGroup()
+                        .addGroup(panelEnvioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cajaEnvio, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panelEnvioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelEnvioLayout.createSequentialGroup()
+                                    .addComponent(cajaTotalProductosEnvio, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(lblErrorImg, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(134, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelEnvioLayout.createSequentialGroup()
                         .addGroup(panelEnvioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(panelEnvioLayout.createSequentialGroup()
+                                .addComponent(jLabel24)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblPrecioConEnvioUnidad, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelEnvioLayout.createSequentialGroup()
                                 .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(30, 30, 30)
@@ -1040,27 +966,8 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
                                 .addGroup(panelEnvioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(lblPrecioAcumulado, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
                                     .addComponent(lblCostoEnvioUnidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(22, 22, 22))
-                    .addGroup(panelEnvioLayout.createSequentialGroup()
-                        .addGroup(panelEnvioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cajaEnvio, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panelEnvioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelEnvioLayout.createSequentialGroup()
-                                    .addComponent(cajaTotalProductosEnvio, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(lblErrorImg, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelEnvioLayout.createSequentialGroup()
-                                .addComponent(jLabel24)
-                                .addGap(18, 18, 18)
-                                .addComponent(lblPrecioConEnvioUnidad, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(29, Short.MAX_VALUE))))
+                        .addGap(22, 22, 22))))
         );
-
-        panelEnvioLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cajaEnvio, cajaTotalProductosEnvio});
-
         panelEnvioLayout.setVerticalGroup(
             panelEnvioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelEnvioLayout.createSequentialGroup()
@@ -1097,8 +1004,6 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
                 .addContainerGap(63, Short.MAX_VALUE))
         );
 
-        panelEnvioLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {cajaEnvio, cajaTotalProductosEnvio});
-
         jSeparator2.setForeground(new java.awt.Color(255, 204, 51));
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -1112,54 +1017,36 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
             }
         });
 
-        btnVer.setBackground(new java.awt.Color(255, 249, 204));
-        btnVer.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
-        btnVer.setText("Ver productos");
-        btnVer.setAlignmentY(0.0F);
-        btnVer.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
-        btnVer.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnVer.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnVer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVerActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout panelCuerpoLayout = new javax.swing.GroupLayout(panelCuerpo);
         panelCuerpo.setLayout(panelCuerpoLayout);
         panelCuerpoLayout.setHorizontalGroup(
             panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCuerpoLayout.createSequentialGroup()
                 .addGap(76, 76, 76)
+                .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panelBasico, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCuerpoLayout.createSequentialGroup()
-                        .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(panelBasico, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelCuerpoLayout.createSequentialGroup()
-                                .addGap(32, 32, 32)
-                                .addComponent(panelStock, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelCuerpoLayout.createSequentialGroup()
-                                .addGap(23, 23, 23)
-                                .addComponent(panelCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(panelCuerpoLayout.createSequentialGroup()
-                                .addGap(68, 68, 68)
-                                .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(86, 86, 86)
-                                .addComponent(btnBorrar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelCuerpoLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(panelEnvio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addGap(16, 16, 16))
+                        .addGap(32, 32, 32)
+                        .addComponent(panelStock, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelCuerpoLayout.createSequentialGroup()
-                        .addComponent(btnVer, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(23, 23, 23)
+                        .addComponent(panelCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(panelCuerpoLayout.createSequentialGroup()
+                        .addGap(68, 68, 68)
+                        .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(86, 86, 86)
+                        .addComponent(btnBorrar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelCuerpoLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(panelEnvio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(16, 16, 16))
         );
         panelCuerpoLayout.setVerticalGroup(
             panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1174,9 +1061,7 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
             .addGroup(panelCuerpoLayout.createSequentialGroup()
                 .addGap(86, 86, 86)
                 .addComponent(lblTitulo)
-                .addGap(28, 28, 28)
-                .addComponent(btnVer, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(7, 7, 7)
+                .addGap(68, 68, 68)
                 .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCuerpoLayout.createSequentialGroup()
                         .addGap(65, 65, 65)
@@ -1222,90 +1107,60 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-//        if (estaTodoBien()) {
+    private void cajaStockKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaStockKeyPressed
+        stockCargar();
+    }//GEN-LAST:event_cajaStockKeyPressed
 
-        Integer indiceCat = cmbCat.getSelectedIndex();
-        Integer indiceProv = cmbProveedor.getSelectedIndex();
+    private void cajaStockKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaStockKeyReleased
+        stockCargar();
+    }//GEN-LAST:event_cajaStockKeyReleased
 
-        String nombre = cajaNombre.getText().toUpperCase();
-        Date fechaCompra = fCompra.getDate();
-        Date fechaVencimiento = fVencimiento.getDate();
+    private void cajaStockKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaStockKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cajaStockKeyTyped
 
-        asignarValorDefaultSiEstaVacio(cajaNumCajas);
-        asignarValorDefaultSiEstaVacio(cajaUnidCajas);
-        asignarValorDefaultSiEstaVacio(cajaTamanno);
-        asignarValorDefaultSiEstaVacio(cajaPrecioTotalCaja);
-        asignarValorDefaultSiEstaVacioLabel(lblPrecioMetro);
-        asignarValorDefaultSiEstaVacioLabel(lblTotalUnidades);
-        asignarValorDefaultSiEstaVacioLabel(lblPrecioUnidPaquetes);
-        asignarValorDefaultSiEstaVacioLabel(lblPrecioDeUnidad);
-        asignarValorDefaultSiEstaVacioLabel(lblTamEnvio);
+    private void cajaTamannoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaTamannoKeyReleased
+        stockCargar();
+    }//GEN-LAST:event_cajaTamannoKeyReleased
 
-        Integer numCajas = Integer.valueOf(cajaNumCajas.getText());
-        Integer undCaja = Integer.valueOf(cajaUnidCajas.getText());
-        Integer precioCaja = Integer.valueOf(formatoNatural(lblPrecioUnidPaquetes.getText()));
-        Integer precioFinal = Integer.valueOf(formatoNatural(lblPrecioFinal.getText()));
-        Integer envio = Integer.valueOf(cajaEnvio.getText());
-        Double tamanno = Double.valueOf(cajaTamanno.getText());
+    private void cajaPrecioTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaPrecioTotalActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cajaPrecioTotalActionPerformed
 
-        Integer precioMetro = Integer.valueOf(formatoNatural(lblPrecioMetro.getText()));
-        Integer precioConEnvio = Integer.valueOf(formatoNatural(lblPrecioConEnvioUnidad.getText()));
+    private void cajaPrecioTotalKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaPrecioTotalKeyReleased
+        stockCargar();
+    }//GEN-LAST:event_cajaPrecioTotalKeyReleased
 
-        Integer stock, precioUnid, precioTotalCompra;
+    private void cajaNumCajasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaNumCajasKeyReleased
+        paqueteCargar();
+    }//GEN-LAST:event_cajaNumCajasKeyReleased
 
-        if (chBoxCaja.isSelected()) {
-            stock = Integer.valueOf(lblTotalUnidades.getText());
-            precioUnid = Integer.valueOf(formatoNatural(lblPrecioDeUnidad.getText()));
-            precioTotalCompra = Integer.valueOf(cajaPrecioTotalCaja.getText());
-            tamanno = 0.;
-        } else {
-            stock = Integer.valueOf(cajaStock.getText());
-            precioUnid = Integer.valueOf(formatoNatural(lblPrecioUnidad.getText()));
-            precioTotalCompra = Integer.valueOf(cajaPrecioTotal.getText());
+    private void cajaUnidCajasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaUnidCajasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cajaUnidCajasActionPerformed
 
-        }
+    private void cajaUnidCajasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaUnidCajasKeyReleased
+        paqueteCargar();
+    }//GEN-LAST:event_cajaUnidCajasKeyReleased
 
-        Integer codSeleccionadoProv = losCodigosProv.get(indiceProv);
-        Integer codSeleccionadoCat = losCodigosCat.get(indiceCat);
+    private void cajaPrecioTotalCajaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaPrecioTotalCajaKeyReleased
+        paqueteCargar();
+    }//GEN-LAST:event_cajaPrecioTotalCajaKeyReleased
 
-        Proveedor objProveedor = new Proveedor(codSeleccionadoProv, "", "", "", 0);
-        CategoriaProducto objCategorias = new CategoriaProducto(codSeleccionadoCat, "", 0);
-
-        DaoProducto daoProducto = new DaoProducto();
-        Producto objProducto = new Producto(0, nombre, numCajas, undCaja, precioCaja, precioUnid, precioTotalCompra, envio, precioFinal, fechaCompra, fechaVencimiento,
-                stock, tamanno, precioMetro, precioConEnvio, objCategorias, objProveedor);
-
-        if (!verificarNombre(nombre)) {
-            System.out.println("existe: " + verificarNombre(nombre));
-
-            if (daoProducto.registrar(objProducto)) {
-                JOptionPane.showMessageDialog(panelCuerpo, "Registro Exitoso", "Información", JOptionPane.INFORMATION_MESSAGE);
-                borrarDatos();
-
-            } else {
-                JOptionPane.showMessageDialog(panelCuerpo, "No se pudo registrar", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            JOptionPane.showMessageDialog(panelCuerpo, "El proveedor ya ha sido registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        }
-
-//        }
-    }//GEN-LAST:event_btnAgregarActionPerformed
-
-    private void btnProveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProveedorActionPerformed
-       
-    }//GEN-LAST:event_btnProveedorActionPerformed
+    private void cmbCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbCatActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbCatActionPerformed
 
     private void btnCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoriaActionPerformed
         FrmCategoriaProducto windowCat = new FrmCategoriaProducto(null, true);
@@ -1320,88 +1175,155 @@ public class FrmProductoEditar extends javax.swing.JInternalFrame {
         });
     }//GEN-LAST:event_btnCategoriaActionPerformed
 
-    private void cajaPrecioTotalCajaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaPrecioTotalCajaKeyReleased
-        paqueteCargar();
-    }//GEN-LAST:event_cajaPrecioTotalCajaKeyReleased
+    private void btnProveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProveedorActionPerformed
 
-    private void cajaUnidCajasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaUnidCajasKeyReleased
-        paqueteCargar();
-    }//GEN-LAST:event_cajaUnidCajasKeyReleased
-
-    private void cajaUnidCajasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaUnidCajasActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cajaUnidCajasActionPerformed
+    }//GEN-LAST:event_btnProveedorActionPerformed
 
     private void chBoxCajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chBoxCajaActionPerformed
-        if (chBoxCaja.isSelected()) {
-            stockDisabled();
-            borrarCostos();
-        } else {
-            cajaDisabled();
-            borrarCostos();
-        }
+//        if (chBoxCaja.isSelected()) {
+//            stockDisabled();
+//            borrarCostos();
+//        } else {
+//            cajaDisabled();
+//            borrarCostos();
+//        }
     }//GEN-LAST:event_chBoxCajaActionPerformed
 
-    private void cajaStockKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaStockKeyReleased
-        stockCargar();
-
-    }//GEN-LAST:event_cajaStockKeyReleased
-
-    private void cajaEnvioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaEnvioKeyReleased
-        cargarCostos();
-    }//GEN-LAST:event_cajaEnvioKeyReleased
-
-    private void cajaPrecioTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaPrecioTotalActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cajaPrecioTotalActionPerformed
-
-    private void cajaPrecioTotalKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaPrecioTotalKeyReleased
-        stockCargar();
-    }//GEN-LAST:event_cajaPrecioTotalKeyReleased
-
-    private void cmbCatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbCatActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbCatActionPerformed
-
-    private void cajaTotalProductosEnvioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaTotalProductosEnvioKeyReleased
-        cargarCostos();
-    }//GEN-LAST:event_cajaTotalProductosEnvioKeyReleased
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+//        if (estaTodoBien()) {
+//
+//            Integer indiceCat = cmbCat.getSelectedIndex();
+//            Integer indiceProv = cmbProveedor.getSelectedIndex();
+//
+//            String nombre = cajaNombre.getText().toUpperCase();
+//            Date fechaCompra = fCompra.getDate();
+//            Date fechaVencimiento = fVencimiento.getDate();
+//
+//            asignarValorDefaultSiEstaVacio(cajaNumCajas);
+//            asignarValorDefaultSiEstaVacio(cajaUnidCajas);
+//            asignarValorDefaultSiEstaVacio(cajaTamanno);
+//            asignarValorDefaultSiEstaVacio(cajaPrecioTotalCaja);
+//            asignarValorDefaultSiEstaVacioLabel(lblPrecioMetro);
+//            asignarValorDefaultSiEstaVacioLabel(lblTotalUnidades);
+//            asignarValorDefaultSiEstaVacioLabel(lblPrecioUnidPaquetes);
+//            asignarValorDefaultSiEstaVacioLabel(lblPrecioDeUnidad);
+//            asignarValorDefaultSiEstaVacioLabel(lblTamEnvio);
+//
+//            Integer numCajas = Integer.valueOf(cajaNumCajas.getText());
+//            Integer undCaja = Integer.valueOf(cajaUnidCajas.getText());
+//            Integer precioCaja = Integer.valueOf(formatoNatural(lblPrecioUnidPaquetes.getText()));
+//            Integer precioFinal = Integer.valueOf(formatoNatural(lblPrecioFinal.getText()));
+//            Integer envio = Integer.valueOf(cajaEnvio.getText());
+//            Double tamanno = Double.valueOf(cajaTamanno.getText());
+//
+//            Integer precioMetro = Integer.valueOf(formatoNatural(lblPrecioMetro.getText()));
+//            Integer precioConEnvio = Integer.valueOf(formatoNatural(lblPrecioConEnvioUnidad.getText()));
+//
+//            Integer stock, precioUnid, precioTotalCompra;
+//
+//            if (chBoxCaja.isSelected()) {
+//                stock = Integer.valueOf(lblTotalUnidades.getText());
+//                precioUnid = Integer.valueOf(formatoNatural(lblPrecioDeUnidad.getText()));
+//                precioTotalCompra = Integer.valueOf(cajaPrecioTotalCaja.getText());
+//                tamanno = 0.;
+//            } else {
+//                stock = Integer.valueOf(cajaStock.getText());
+//                precioUnid = Integer.valueOf(formatoNatural(lblPrecioUnidad.getText()));
+//                precioTotalCompra = Integer.valueOf(cajaPrecioTotal.getText());
+//
+//            }
+//
+//            Integer codSeleccionadoProv = losCodigosProv.get(indiceProv);
+//            Integer codSeleccionadoCat = losCodigosCat.get(indiceCat);
+//
+//            Proveedor objProveedor = new Proveedor(codSeleccionadoProv, "", "", "", 0);
+//            CategoriaProducto objCategorias = new CategoriaProducto(codSeleccionadoCat, "", 0);
+//
+//            DaoProducto daoProducto = new DaoProducto();
+//            Producto objProducto = new Producto(0, nombre, numCajas, undCaja, precioCaja, precioUnid, precioTotalCompra, envio, precioFinal, fechaCompra, fechaVencimiento,
+//                    stock, tamanno, precioMetro, precioConEnvio, objCategorias, objProveedor);
+//
+//            if (!verificarNombre(nombre)) {
+//                System.out.println("existe: " + verificarNombre(nombre));
+//
+//                if (daoProducto.registrar(objProducto)) {
+//                    JOptionPane.showMessageDialog(panelCuerpo, "Registro Exitoso", "Información", JOptionPane.INFORMATION_MESSAGE);
+//                    borrarDatos();
+//
+//                } else {
+//                    JOptionPane.showMessageDialog(panelCuerpo, "No se pudo registrar", "Error", JOptionPane.ERROR_MESSAGE);
+//                }
+//            } else {
+//                JOptionPane.showMessageDialog(panelCuerpo, "El proveedor ya ha sido registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
+//            }
+//
+//        }
+    }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void cajaEnvioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaEnvioActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cajaEnvioActionPerformed
 
-    private void cajaNumCajasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaNumCajasKeyReleased
-        paqueteCargar();
-    }//GEN-LAST:event_cajaNumCajasKeyReleased
+    private void cajaEnvioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaEnvioKeyReleased
+        cargarCostos();
+    }//GEN-LAST:event_cajaEnvioKeyReleased
 
-    private void cajaStockKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaStockKeyTyped
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cajaStockKeyTyped
+    private void cajaTotalProductosEnvioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaTotalProductosEnvioKeyReleased
+        cargarCostos();
+    }//GEN-LAST:event_cajaTotalProductosEnvioKeyReleased
 
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
-        borrarDatos();
+//        borrarDatos();
     }//GEN-LAST:event_btnBorrarActionPerformed
 
-    private void cajaTamannoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaTamannoKeyReleased
-        stockCargar();
-    }//GEN-LAST:event_cajaTamannoKeyReleased
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(FrmProductoEditar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(FrmProductoEditar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(FrmProductoEditar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(FrmProductoEditar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
 
-    private void cajaStockKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaStockKeyPressed
-        stockCargar();
-    }//GEN-LAST:event_cajaStockKeyPressed
-
-    private void btnVerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnVerActionPerformed
-
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                FrmProductoEditar dialog = new FrmProductoEditar(new javax.swing.JFrame(), true, new Producto());
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnBorrar;
     private javax.swing.JButton btnCategoria;
     private javax.swing.JButton btnProveedor;
-    private javax.swing.JButton btnVer;
     private javax.swing.JTextField cajaEnvio;
     private javax.swing.JTextField cajaNombre;
     private javax.swing.JTextField cajaNumCajas;

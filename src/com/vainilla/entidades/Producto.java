@@ -21,11 +21,12 @@ public class Producto {
     private Integer precioUnidadEnvio;
     private CategoriaProducto codCategoriaProducto;
     private Proveedor codProveedor;
+    private Integer udAdquiridasEnvio;
 
     public Producto() {
     }
 
-    public Producto(Integer codProducto, String nombreProducto, Integer numeroCajas, Integer unidadPorCaja, Integer precioCaja, Integer precioUnidad, Integer precioTotalCompra, Integer envio, Integer precioFinal, Date fechaCompra, Date fechaVencimiento, Integer stock, Double tamanno, Integer precioMetro, Integer precioUnidadEnvio, CategoriaProducto codCategoriaProducto, Proveedor codProveedor) {
+    public Producto(Integer codProducto, String nombreProducto, Integer numeroCajas, Integer unidadPorCaja, Integer precioCaja, Integer precioUnidad, Integer precioTotalCompra, Integer envio, Integer precioFinal, Date fechaCompra, Date fechaVencimiento, Integer stock, Double tamanno, Integer precioMetro, Integer precioUnidadEnvio, CategoriaProducto codCategoriaProducto, Proveedor codProveedor, Integer udAdquiridasEnvio) {
         this.codProducto = codProducto;
         this.nombreProducto = nombreProducto;
         this.numeroCajas = numeroCajas;
@@ -43,7 +44,10 @@ public class Producto {
         this.precioUnidadEnvio = precioUnidadEnvio;
         this.codCategoriaProducto = codCategoriaProducto;
         this.codProveedor = codProveedor;
+        this.udAdquiridasEnvio = udAdquiridasEnvio;
     }
+
+
 
     public Integer getCodProducto() {
         return codProducto;
@@ -181,9 +185,20 @@ public class Producto {
         this.codProveedor = codProveedor;
     }
 
+    public Integer getUdAdquiridasEnvio() {
+        return udAdquiridasEnvio;
+    }
+
+    public void setUdAdquiridasEnvio(Integer udAdquiridasEnvio) {
+        this.udAdquiridasEnvio = udAdquiridasEnvio;
+    }
+
     @Override
     public String toString() {
-        return "Producto{" + "codProducto=" + codProducto + ", nombreProducto=" + nombreProducto + ", numeroCajas=" + numeroCajas + ", unidadPorCaja=" + unidadPorCaja + ", precioCaja=" + precioCaja + ", precioUnidad=" + precioUnidad + ", precioTotalCompra=" + precioTotalCompra + ", envio=" + envio + ", precioFinal=" + precioFinal + ", fechaCompra=" + fechaCompra + ", fechaVencimiento=" + fechaVencimiento + ", stock=" + stock + ", tamanno=" + tamanno + ", precioMetro=" + precioMetro + ", precioUnidadEnvio=" + precioUnidadEnvio + ", codCategoriaProducto=" + codCategoriaProducto + ", codProveedor=" + codProveedor + '}';
+        return "Producto{" + "codProducto=" + codProducto + ", nombreProducto=" + nombreProducto + ", numeroCajas=" + numeroCajas + ", unidadPorCaja=" + unidadPorCaja + ", precioCaja=" + precioCaja + ", precioUnidad=" + precioUnidad + ", precioTotalCompra=" + precioTotalCompra + ", envio=" + envio + ", precioFinal=" + precioFinal + ", fechaCompra=" + fechaCompra + ", fechaVencimiento=" + fechaVencimiento + ", stock=" + stock + ", tamanno=" + tamanno + ", precioMetro=" + precioMetro + ", precioUnidadEnvio=" + precioUnidadEnvio + ", codCategoriaProducto=" + codCategoriaProducto + ", codProveedor=" + codProveedor + ", udAdquiridasEnvio=" + udAdquiridasEnvio + '}';
     }
+    
+
+    
 
 }
