@@ -3,9 +3,7 @@ package com.vainilla.fomularios;
 import com.vainilla.daos.DaoProveedor;
 import com.vainilla.entidades.Proveedor;
 import java.awt.Dialog;
-import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 

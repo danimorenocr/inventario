@@ -47,7 +47,7 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
             consulta.setInt(14, elObjeto.getPrecioUnidadEnvio());
             consulta.setInt(15, elObjeto.getCodProveedor().getCodProveedor());
             consulta.setInt(16, elObjeto.getCodCategoriaProducto().getCodCategoria());
-            consulta.setInt(16, elObjeto.getUdAdquiridasEnvio());
+            consulta.setInt(17, elObjeto.getUdAdquiridasEnvio());
             cantidad = consulta.executeUpdate();
 
             objConexion.close();
@@ -136,7 +136,7 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
             Producto objProducto = null;
 
             if (registros.next()) {
-               Integer codProducto = registros.getInt(1);
+                Integer codProducto = registros.getInt(1);
                 String nombre = registros.getString(2);
                 Integer numCajas = registros.getInt(3);
                 Integer numUniCajas = registros.getInt(4);
@@ -192,7 +192,48 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
 
     @Override
     public Boolean actualizar(Producto elObjeto) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            cadenaSql = "UPDATE productos SET nombre_producto = ?, num_cajas = ?, num_unidad_cajas = ?, precio_caja = ?, "
+                    + "precio_unidad = ?, precio_total_compra = ?, envio = ?, precio_final = ?, fecha_compra = ?, fecha_vencimiento = ?, stock = ?, tamanno = ?, "
+                    + "precioMetro = ?, precio_unidad_con_envio = ?,cod_categoria = ?, cod_proveedor = ?, ud_adq_envio = ? "
+                    + "WHERE cod_producto = ?";
+
+            consulta = objConexion.prepareStatement(cadenaSql);
+
+            consulta.setString(1, elObjeto.getNombreProducto());
+            consulta.setInt(2, elObjeto.getNumeroCajas());
+            consulta.setInt(3, elObjeto.getUnidadPorCaja());
+            consulta.setInt(4, elObjeto.getPrecioCaja());
+            consulta.setInt(5, elObjeto.getPrecioUnidad());
+            consulta.setInt(6, elObjeto.getPrecioTotalCompra());
+            consulta.setInt(7, elObjeto.getEnvio());
+            consulta.setInt(8, elObjeto.getPrecioFinal());
+
+            long milisegundos = elObjeto.getFechaCompra().getTime();
+            Date fechaCompra = new Date(milisegundos);
+            consulta.setDate(9, fechaCompra);
+
+            long milisegundo = elObjeto.getFechaVencimiento().getTime();
+            Date fechaVencimiento = new Date(milisegundo);
+            consulta.setDate(10, fechaVencimiento);
+
+            consulta.setInt(11, elObjeto.getStock());
+            consulta.setDouble(12, elObjeto.getTamanno());
+            consulta.setInt(13, elObjeto.getPrecioMetro());
+            consulta.setInt(14, elObjeto.getPrecioUnidadEnvio());
+            consulta.setInt(15, elObjeto.getCodProveedor().getCodProveedor());
+            consulta.setInt(16, elObjeto.getCodCategoriaProducto().getCodCategoria());
+            consulta.setInt(17, elObjeto.getUdAdquiridasEnvio());
+            consulta.setInt(18, elObjeto.getCodProducto());
+
+            cantidad = consulta.executeUpdate();
+            objConexion.close();
+            return cantidad > 0;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoProducto.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
     @Override

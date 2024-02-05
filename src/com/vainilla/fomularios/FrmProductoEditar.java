@@ -7,15 +7,23 @@ import com.vainilla.entidades.CategoriaProducto;
 import com.vainilla.entidades.Producto;
 import com.vainilla.entidades.Proveedor;
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.NumberFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
@@ -40,7 +48,20 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         cargarProveedor();
         cargarCat();
         cargarDatos();
+        cargarImg();
+    }
 
+    private void cargarImg() {
+        try {
+            URL imgU = new URL("https://cdn-icons-png.flaticon.com/128/738/738884.png");
+            Image boxesImg = new ImageIcon(imgU).getImage().getScaledInstance(25, 25, 0);
+            ImageIcon iconoBox = new ImageIcon(boxesImg);
+            lblErrorImg.setIcon(iconoBox);
+            lblErrorImg.setVisible(false);
+
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(FrmPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void cargarCategoria(String orden) {
@@ -107,25 +128,42 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         fCompra.setDate(objActualizar.getFechaCompra());
         fVencimiento.setDate(objActualizar.getFechaVencimiento());
         cajaEnvio.setText(objActualizar.getEnvio().toString());
-        cajaStock.setText(objActualizar.getStock().toString());
-        cajaNumCajas.setText(objActualizar.getNumeroCajas().toString());
-        cajaUnidCajas.setText(objActualizar.getUnidadPorCaja().toString());
-        cajaTamanno.setText(objActualizar.getTamanno().toString());
-        cajaPrecioTotalCaja.setText(objActualizar.getPrecioCaja().toString());
-        cajaTotalProductosEnvio.setText("");
-        cajaPrecioTotal.setText(objActualizar.getPrecioTotalCompra().toString());
-        lblPrecioUnidPaquetes.setText(objActualizar.getPrecioCaja().toString());
-        lblPrecioAcumulado.setText(objActualizar.getPrecioUnidad().toString());
-        lblCostoEnvioUnidad.setText("-");//HACER CALCULO
-        lblPrecioConEnvioUnidad.setText(objActualizar.getPrecioUnidadEnvio().toString());
-        lblPrecioFinal.setText(objActualizar.getPrecioFinal().toString());
-        lblTotalUnidades.setText(objActualizar.getStock().toString());
-        lblPrecioDeUnidad.setText(objActualizar.getPrecioUnidad().toString());
-        lblPrecioUnidad.setText(objActualizar.getPrecioUnidad().toString());
-        lblPrecioMetro.setText(objActualizar.getPrecioMetro().toString());
-//        Integer precioMetr = Integer.valueOf(formatoNatural(lblPrecioMetro.getText()));
-//        Integer precioMetroEnvio = costoEnvioUnidadCaja + precioMetr;
-//        lblTamEnvio.setText(formatoNumero(precioMetroEnvio) + "");
+        cajaTotalProductosEnvio.setText(objActualizar.getUdAdquiridasEnvio().toString());
+        lblPrecioAcumulado.setText(formatoNumero(objActualizar.getPrecioUnidad()));
+        lblPrecioConEnvioUnidad.setText(formatoNumero(objActualizar.getPrecioUnidadEnvio()));
+        lblPrecioFinal.setText(formatoNumero(objActualizar.getPrecioFinal()));
+        Integer precioMetr = Integer.valueOf(formatoNatural(objActualizar.getPrecioMetro().toString()));
+        Integer envio = objActualizar.getEnvio();
+        Integer unidadesCompradas = objActualizar.getUdAdquiridasEnvio();
+        Integer costoEnvioUnidadCaja = envio / unidadesCompradas;
+        lblCostoEnvioUnidad.setText(formatoNumero(costoEnvioUnidadCaja) + "");
+
+        Integer numCaja = objActualizar.getNumeroCajas();
+
+        //SI HAY NUMEROS DIFERENTES DE 0 EL CHECK BOX ESTA HABILITADO
+        if (numCaja != 0) {
+            chBoxCaja.setSelected(true);
+            stockDisabled();
+            cajaNumCajas.setText(objActualizar.getNumeroCajas().toString());
+            lblTotalUnidades.setText(objActualizar.getStock().toString());
+            lblPrecioDeUnidad.setText(formatoNumero(objActualizar.getPrecioUnidad()));
+            cajaPrecioTotalCaja.setText(objActualizar.getPrecioCaja().toString());
+            lblPrecioUnidPaquetes.setText(formatoNumero(objActualizar.getPrecioCaja()));
+            cajaUnidCajas.setText(objActualizar.getUnidadPorCaja().toString());
+
+        } else {
+            chBoxCaja.setSelected(false);
+            cajaDisabled();
+            cajaTamanno.setText(objActualizar.getTamanno().toString());
+            cajaStock.setText(objActualizar.getStock().toString());
+            lblPrecioUnidad.setText(formatoNumero(objActualizar.getPrecioUnidad()));
+            cajaPrecioTotal.setText(objActualizar.getPrecioTotalCompra().toString());
+            lblPrecioMetro.setText(formatoNumero(objActualizar.getPrecioMetro()));
+            Integer precioMetroEnvio = costoEnvioUnidadCaja + precioMetr;
+            lblTamEnvio.setText(formatoNumero(precioMetroEnvio) + "");
+
+        }
+        cajaNombre.requestFocus();
     }
 
     private boolean estaTodoBien() {
@@ -241,10 +279,17 @@ public class FrmProductoEditar extends javax.swing.JDialog {
             lblPrecioUnidad.setText(formatoNumero(precioXunidad) + "");
             lblPrecioAcumulado.setText(formatoNumero(precioXunidad) + "");
 
-            Integer tam = Integer.valueOf(cajaTamanno.getText());
-            Integer precioMetro = precioXunidad / tam;
+            String tama = cajaTamanno.getText();
 
-            lblPrecioMetro.setText(formatoNumero(precioMetro) + "");
+            if (tama.equals("") || tama.equals(0)) {
+                lblPrecioMetro.setText("-");
+            } else {
+                Integer tam = Integer.valueOf(cajaTamanno.getText());
+                Integer precioMetro = precioXunidad / tam;
+
+                lblPrecioMetro.setText(formatoNumero(precioMetro) + "");
+
+            }
             cargarCostos();
         } catch (NumberFormatException e) {
 
@@ -349,6 +394,67 @@ public class FrmProductoEditar extends javax.swing.JDialog {
 
     }
 
+    private void asignarValorDefaultSiEstaVacio(JTextField textField) {
+        // Verificar si el TextField está vacío y asignar 0 si es el caso
+        if (textField.getText().isEmpty()) {
+            textField.setText("0");
+        }
+    }
+
+    private void asignarValorDefaultSiEstaVacioLabel(JLabel label) {
+        // Verificar si el TextField está vacío y asignar 0 si es el caso
+
+        if (label.getText().equals("-")) {
+            label.setText("0");
+        }
+
+    }
+
+    private void stockDisabled() {
+        cajaStock.setEnabled(false);
+        cajaTamanno.setEnabled(false);
+        cajaPrecioTotal.setEnabled(false);
+        panelStock.setBackground(Color.WHITE);
+
+        panelCaja.setBackground(new Color(255, 251, 227));
+        cajaNumCajas.setEnabled(true);
+        cajaPrecioTotalCaja.setEnabled(true);
+        cajaUnidCajas.setEnabled(true);
+    }
+
+    private void cajaDisabled() {
+        cajaNumCajas.setEnabled(false);
+        cajaPrecioTotalCaja.setEnabled(false);
+        cajaUnidCajas.setEnabled(false);
+        panelCaja.setBackground(Color.WHITE);
+
+        panelStock.setBackground(new Color(255, 251, 227));
+        cajaStock.setEnabled(true);
+        cajaTamanno.setEnabled(true);
+        cajaPrecioTotal.setEnabled(true);
+
+    }
+
+    private void borrarCostos() {
+
+        cajaEnvio.setText("");
+        cajaStock.setText("");
+        cajaNumCajas.setText("");
+        cajaUnidCajas.setText("");
+        cajaTamanno.setText("");
+        cajaPrecioTotalCaja.setText("");
+        cajaTotalProductosEnvio.setText("");
+        cajaPrecioTotal.setText("");
+        lblPrecioUnidPaquetes.setText("-");
+        lblPrecioAcumulado.setText("-");
+        lblCostoEnvioUnidad.setText("-");
+        lblPrecioConEnvioUnidad.setText("-");
+        lblPrecioFinal.setText("-");
+        lblTotalUnidades.setText("-");
+        lblPrecioDeUnidad.setText("-");
+        lblPrecioUnidad.setText("-");
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -413,7 +519,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         lblTamEnvio = new javax.swing.JLabel();
         lblErrorImg = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
-        btnBorrar = new javax.swing.JButton();
+        bntCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -651,11 +757,10 @@ public class FrmProductoEditar extends javax.swing.JDialog {
                     .addGroup(panelCajaLayout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addGroup(panelCajaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelCajaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel25, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblPrecioUnidPaquetes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel25)
                             .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblPrecioDeUnidad, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(lblPrecioDeUnidad, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblPrecioUnidPaquetes, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(panelCajaLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(panelCajaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -903,6 +1008,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         lblPrecioFinal.setText("-");
 
         lblPrecioConEnvioUnidad.setFont(new java.awt.Font("Fredoka", 0, 28)); // NOI18N
+        lblPrecioConEnvioUnidad.setForeground(new java.awt.Color(47, 186, 75));
         lblPrecioConEnvioUnidad.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblPrecioConEnvioUnidad.setText("-");
 
@@ -1007,13 +1113,13 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         jSeparator2.setForeground(new java.awt.Color(255, 204, 51));
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        btnBorrar.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
-        btnBorrar.setText("Borrar");
-        btnBorrar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
-        btnBorrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnBorrar.addActionListener(new java.awt.event.ActionListener() {
+        bntCancelar.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
+        bntCancelar.setText("Cancelar");
+        bntCancelar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
+        bntCancelar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        bntCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBorrarActionPerformed(evt);
+                bntCancelarActionPerformed(evt);
             }
         });
 
@@ -1040,7 +1146,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
                         .addGap(68, 68, 68)
                         .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(86, 86, 86)
-                        .addComponent(btnBorrar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(bntCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelCuerpoLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1055,9 +1161,9 @@ public class FrmProductoEditar extends javax.swing.JDialog {
                 .addComponent(panelEnvio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnBorrar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bntCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(149, 149, 149))
+                .addGap(107, 107, 107))
             .addGroup(panelCuerpoLayout.createSequentialGroup()
                 .addGap(86, 86, 86)
                 .addComponent(lblTitulo)
@@ -1078,7 +1184,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
                     .addGroup(panelCuerpoLayout.createSequentialGroup()
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(102, 102, 102)))
-                .addGap(0, 122, Short.MAX_VALUE))
+                .addGap(0, 60, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -1095,7 +1201,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(panelCuerpo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(68, 68, 68))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1109,9 +1215,8 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 844, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -1180,84 +1285,99 @@ public class FrmProductoEditar extends javax.swing.JDialog {
     }//GEN-LAST:event_btnProveedorActionPerformed
 
     private void chBoxCajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chBoxCajaActionPerformed
-//        if (chBoxCaja.isSelected()) {
-//            stockDisabled();
-//            borrarCostos();
-//        } else {
-//            cajaDisabled();
-//            borrarCostos();
-//        }
+        if (chBoxCaja.isSelected()) {
+            stockDisabled();
+            borrarCostos();
+        } else {
+            cajaDisabled();
+            borrarCostos();
+        }
     }//GEN-LAST:event_chBoxCajaActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-//        if (estaTodoBien()) {
-//
-//            Integer indiceCat = cmbCat.getSelectedIndex();
-//            Integer indiceProv = cmbProveedor.getSelectedIndex();
-//
-//            String nombre = cajaNombre.getText().toUpperCase();
-//            Date fechaCompra = fCompra.getDate();
-//            Date fechaVencimiento = fVencimiento.getDate();
-//
-//            asignarValorDefaultSiEstaVacio(cajaNumCajas);
-//            asignarValorDefaultSiEstaVacio(cajaUnidCajas);
-//            asignarValorDefaultSiEstaVacio(cajaTamanno);
-//            asignarValorDefaultSiEstaVacio(cajaPrecioTotalCaja);
-//            asignarValorDefaultSiEstaVacioLabel(lblPrecioMetro);
-//            asignarValorDefaultSiEstaVacioLabel(lblTotalUnidades);
-//            asignarValorDefaultSiEstaVacioLabel(lblPrecioUnidPaquetes);
-//            asignarValorDefaultSiEstaVacioLabel(lblPrecioDeUnidad);
-//            asignarValorDefaultSiEstaVacioLabel(lblTamEnvio);
-//
-//            Integer numCajas = Integer.valueOf(cajaNumCajas.getText());
-//            Integer undCaja = Integer.valueOf(cajaUnidCajas.getText());
-//            Integer precioCaja = Integer.valueOf(formatoNatural(lblPrecioUnidPaquetes.getText()));
-//            Integer precioFinal = Integer.valueOf(formatoNatural(lblPrecioFinal.getText()));
-//            Integer envio = Integer.valueOf(cajaEnvio.getText());
-//            Double tamanno = Double.valueOf(cajaTamanno.getText());
-//
-//            Integer precioMetro = Integer.valueOf(formatoNatural(lblPrecioMetro.getText()));
-//            Integer precioConEnvio = Integer.valueOf(formatoNatural(lblPrecioConEnvioUnidad.getText()));
-//
-//            Integer stock, precioUnid, precioTotalCompra;
-//
-//            if (chBoxCaja.isSelected()) {
-//                stock = Integer.valueOf(lblTotalUnidades.getText());
-//                precioUnid = Integer.valueOf(formatoNatural(lblPrecioDeUnidad.getText()));
-//                precioTotalCompra = Integer.valueOf(cajaPrecioTotalCaja.getText());
-//                tamanno = 0.;
-//            } else {
-//                stock = Integer.valueOf(cajaStock.getText());
-//                precioUnid = Integer.valueOf(formatoNatural(lblPrecioUnidad.getText()));
-//                precioTotalCompra = Integer.valueOf(cajaPrecioTotal.getText());
-//
-//            }
-//
-//            Integer codSeleccionadoProv = losCodigosProv.get(indiceProv);
-//            Integer codSeleccionadoCat = losCodigosCat.get(indiceCat);
-//
-//            Proveedor objProveedor = new Proveedor(codSeleccionadoProv, "", "", "", 0);
-//            CategoriaProducto objCategorias = new CategoriaProducto(codSeleccionadoCat, "", 0);
-//
-//            DaoProducto daoProducto = new DaoProducto();
-//            Producto objProducto = new Producto(0, nombre, numCajas, undCaja, precioCaja, precioUnid, precioTotalCompra, envio, precioFinal, fechaCompra, fechaVencimiento,
-//                    stock, tamanno, precioMetro, precioConEnvio, objCategorias, objProveedor);
-//
-//            if (!verificarNombre(nombre)) {
-//                System.out.println("existe: " + verificarNombre(nombre));
-//
-//                if (daoProducto.registrar(objProducto)) {
-//                    JOptionPane.showMessageDialog(panelCuerpo, "Registro Exitoso", "Información", JOptionPane.INFORMATION_MESSAGE);
-//                    borrarDatos();
-//
-//                } else {
-//                    JOptionPane.showMessageDialog(panelCuerpo, "No se pudo registrar", "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            } else {
-//                JOptionPane.showMessageDialog(panelCuerpo, "El proveedor ya ha sido registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
-//            }
-//
-//        }
+        if (estaTodoBien()) {
+
+            Integer indiceCat = cmbCat.getSelectedIndex();
+            Integer indiceProv = cmbProveedor.getSelectedIndex();
+
+            String nombre = cajaNombre.getText().toUpperCase();
+            Date fechaCompra = fCompra.getDate();
+            Date fechaVencimiento = fVencimiento.getDate();
+
+            asignarValorDefaultSiEstaVacio(cajaNumCajas);
+            asignarValorDefaultSiEstaVacio(cajaUnidCajas);
+            asignarValorDefaultSiEstaVacio(cajaTamanno);
+            asignarValorDefaultSiEstaVacio(cajaPrecioTotalCaja);
+            asignarValorDefaultSiEstaVacioLabel(lblPrecioMetro);
+            asignarValorDefaultSiEstaVacioLabel(lblTotalUnidades);
+            asignarValorDefaultSiEstaVacioLabel(lblPrecioUnidPaquetes);
+            asignarValorDefaultSiEstaVacioLabel(lblPrecioDeUnidad);
+            asignarValorDefaultSiEstaVacioLabel(lblTamEnvio);
+
+            Integer numCajas = Integer.valueOf(cajaNumCajas.getText());
+            Integer undCaja = Integer.valueOf(cajaUnidCajas.getText());
+            Integer precioCaja = Integer.valueOf(formatoNatural(lblPrecioUnidPaquetes.getText()));
+            Integer precioFinal = Integer.valueOf(formatoNatural(lblPrecioFinal.getText()));
+            Integer envio = Integer.valueOf(cajaEnvio.getText());
+            Integer udAdquiridasEnvio = Integer.valueOf(cajaTotalProductosEnvio.getText());
+            Double tamanno = Double.valueOf(cajaTamanno.getText());
+
+            Integer precioMetro = Integer.valueOf(formatoNatural(lblPrecioMetro.getText()));
+            Integer precioConEnvio = Integer.valueOf(formatoNatural(lblPrecioConEnvioUnidad.getText()));
+
+            Integer stock, precioUnid, precioTotalCompra;
+
+            if (chBoxCaja.isSelected()) {
+                stock = Integer.valueOf(lblTotalUnidades.getText());
+                precioUnid = Integer.valueOf(formatoNatural(lblPrecioDeUnidad.getText()));
+                precioTotalCompra = Integer.valueOf(cajaPrecioTotalCaja.getText());
+                tamanno = 0.;
+            } else {
+                stock = Integer.valueOf(cajaStock.getText());
+                precioUnid = Integer.valueOf(formatoNatural(lblPrecioUnidad.getText()));
+                precioTotalCompra = Integer.valueOf(cajaPrecioTotal.getText());
+
+            }
+
+            Integer codSeleccionadoProv = losCodigosProv.get(indiceProv);
+            Integer codSeleccionadoCat = losCodigosCat.get(indiceCat);
+
+            Proveedor objProveedor = new Proveedor(codSeleccionadoProv, "", "", "", 0);
+            CategoriaProducto objCategorias = new CategoriaProducto(codSeleccionadoCat, "", 0);
+
+            DaoProducto daoProducto = new DaoProducto();
+            objActualizar.setNumeroCajas(numCajas);
+            objActualizar.setUnidadPorCaja(undCaja);
+            objActualizar.setPrecioCaja(precioCaja);
+            objActualizar.setPrecioUnidad(precioUnid);
+            objActualizar.setPrecioTotalCompra(precioTotalCompra);
+            objActualizar.setEnvio(envio);
+            objActualizar.setPrecioFinal(precioFinal);
+            objActualizar.setFechaCompra(fechaCompra);
+            objActualizar.setFechaVencimiento(fechaVencimiento);
+            objActualizar.setStock(stock);
+            objActualizar.setTamanno(tamanno);
+            objActualizar.setPrecioMetro(precioMetro);
+            objActualizar.setPrecioUnidadEnvio(precioConEnvio);
+            objActualizar.setCodCategoriaProducto(objCategorias);
+            objActualizar.setCodProveedor(objProveedor);
+            objActualizar.setUdAdquiridasEnvio(udAdquiridasEnvio);
+
+            if (!verificarNombre(nombre)) {
+                System.out.println("verificar: " + verificarNombre(nombre));
+                objActualizar.setNombreProducto(nombre);
+
+                if (daoProducto.actualizar(objActualizar)) {
+                    JOptionPane.showMessageDialog(panelCuerpo, "El producto fue actualizado", "Información", JOptionPane.INFORMATION_MESSAGE);
+
+                } else {
+                    JOptionPane.showMessageDialog(panelCuerpo, "No se pudo actualizar", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(panelCuerpo, "El producto ya ha sido registrado con ese nombre", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+
+        }
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void cajaEnvioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaEnvioActionPerformed
@@ -1272,9 +1392,9 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         cargarCostos();
     }//GEN-LAST:event_cajaTotalProductosEnvioKeyReleased
 
-    private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
-//        borrarDatos();
-    }//GEN-LAST:event_btnBorrarActionPerformed
+    private void bntCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntCancelarActionPerformed
+        cargarDatos();
+    }//GEN-LAST:event_bntCancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1320,8 +1440,8 @@ public class FrmProductoEditar extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bntCancelar;
     private javax.swing.JButton btnAgregar;
-    private javax.swing.JButton btnBorrar;
     private javax.swing.JButton btnCategoria;
     private javax.swing.JButton btnProveedor;
     private javax.swing.JTextField cajaEnvio;
