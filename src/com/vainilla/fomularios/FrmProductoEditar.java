@@ -281,8 +281,9 @@ public class FrmProductoEditar extends javax.swing.JDialog {
 
             String tama = cajaTamanno.getText();
 
-            if (tama.equals("") || tama.equals(0)) {
-                lblPrecioMetro.setText("-");
+            if (tama.equals("") || tama.equals("0")) {
+                lblPrecioMetro.setText("0");
+                cajaTamanno.setText("");
             } else {
                 Integer tam = Integer.valueOf(cajaTamanno.getText());
                 Integer precioMetro = precioXunidad / tam;
@@ -362,6 +363,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
 
             } else {
                 //COSTOS STOCK
+                Integer precioUnidad = Integer.valueOf(formatoNatural(lblPrecioAcumulado.getText()));
 
                 //EL NUM DE UNIDADES INGRESADAS DEBE SER >= A LAS ENVIADAS
                 Integer stock = Integer.valueOf(cajaStock.getText());
@@ -375,18 +377,19 @@ public class FrmProductoEditar extends javax.swing.JDialog {
                     lblPrecioConEnvioUnidad.setForeground(new Color(47, 186, 75));
                     lblErrorImg.setVisible(false);
                 }
-
-                Integer totalUnid = Integer.valueOf(cajaStock.getText());
-                Integer precioUnidad = Integer.valueOf(formatoNatural(lblPrecioUnidad.getText()));
+                System.out.println("llegue");
                 Integer precioConEnvioUnidad = precioUnidad + costoEnvioUnidadCaja;
                 lblPrecioConEnvioUnidad.setText(formatoNumero(precioConEnvioUnidad) + "");
 
-                Integer precioFinal = totalUnid * precioConEnvioUnidad;
+                Integer precioFinal = stock * precioConEnvioUnidad;
                 lblPrecioFinal.setText(formatoNumero(precioFinal) + "");
 
                 Integer precioMetr = Integer.valueOf(formatoNatural(lblPrecioMetro.getText()));
-                Integer precioMetroEnvio = costoEnvioUnidadCaja + precioMetr;
-                lblTamEnvio.setText(formatoNumero(precioMetroEnvio) + "");
+                if (precioMetr != 0) {
+
+                    Integer precioMetroEnvio = costoEnvioUnidadCaja + precioMetr;
+                    lblTamEnvio.setText(formatoNumero(precioMetroEnvio) + "");
+                }
 
             }
         } catch (NumberFormatException e) {
@@ -1051,7 +1054,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
                                     .addGap(18, 18, 18)
                                     .addComponent(lblErrorImg, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(134, Short.MAX_VALUE))
+                        .addContainerGap(105, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelEnvioLayout.createSequentialGroup()
                         .addGroup(panelEnvioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(panelEnvioLayout.createSequentialGroup()
@@ -1132,15 +1135,15 @@ public class FrmProductoEditar extends javax.swing.JDialog {
                 .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(panelBasico, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCuerpoLayout.createSequentialGroup()
-                        .addGap(32, 32, 32)
-                        .addComponent(panelStock, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelCuerpoLayout.createSequentialGroup()
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(23, 23, 23)
-                        .addComponent(panelCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(panelCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelCuerpoLayout.createSequentialGroup()
+                        .addGap(82, 82, 82)
+                        .addComponent(panelStock, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelCuerpoLayout.createSequentialGroup()
                         .addGap(68, 68, 68)
@@ -1165,7 +1168,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
                     .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(107, 107, 107))
             .addGroup(panelCuerpoLayout.createSequentialGroup()
-                .addGap(86, 86, 86)
+                .addGap(126, 126, 126)
                 .addComponent(lblTitulo)
                 .addGap(68, 68, 68)
                 .addGroup(panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

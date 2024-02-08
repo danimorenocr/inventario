@@ -54,6 +54,7 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
         initComponents();
         tablaDatos.setModel(modeloTabla);
         cargarDatosProducto("");
+        cmbBuscar.setSelectedIndex(10);
         lblTotal.setText(armarLineaCantidad());
     }
 
