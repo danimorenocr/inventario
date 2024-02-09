@@ -13,6 +13,7 @@ import java.awt.event.WindowEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 public class FrmProducto extends javax.swing.JInternalFrame {
@@ -201,8 +204,8 @@ public class FrmProducto extends javax.swing.JInternalFrame {
                 {cajaStock.getText(), "Ingrese la cantidad de stock"},
                 {cajaPrecioTotal.getText(), "Ingrese el precio total del producto"},
                 {cajaTamanno.getText(), "Ingrese el tamaño del producto"},
-                {lblPrecioMetro.getText(), "Mensaje correspondiente para lblPrecioMetro"},
-                {lblPrecioUnidad.getText(), "Mensaje correspondiente para lblPrecioUnidad"}
+                {lblPrecioMetro.getText(), "Ingrese el Precio del Metro"},
+                {lblPrecioUnidad.getText(), "Revise el stock"}
             };
 
             for (Object[] campo : camposNoCheck) {
@@ -241,7 +244,7 @@ public class FrmProducto extends javax.swing.JInternalFrame {
         Object[][] camposEnvio = {
             {cajaEnvio.getText(), "Ingrese el costo del envío"},
             {cajaTotalProductosEnvio.getText(), "Ingrese las unidades adquiridas en el envío"},
-            {lblPrecioAcumulado.getText(), "Mensaje correspondiente para lblPrecioAcumulado"},
+            {lblPrecioAcumulado.getText(), "Mensaje correspondiente para lblPrecioAcumulado"},//QUITAR
             {lblCostoEnvioUnidad.getText(), "Mensaje correspondiente para lblCostoEnvioUnidad"},
             {lblPrecioConEnvioUnidad.getText(), "Mensaje correspondiente para lblPrecioConEnvioUnidad"},
             {lblPrecioFinal.getText(), "Mensaje correspondiente para lblPrecioFinal"},};
@@ -302,9 +305,10 @@ public class FrmProducto extends javax.swing.JInternalFrame {
             Integer stock = Integer.valueOf(cajaStock.getText());
             Integer precioFull = Integer.valueOf(cajaPrecioTotal.getText());
             Integer precioXunidad = precioFull / stock;
+            
             lblPrecioUnidad.setText(formatoNumero(precioXunidad) + "");
             lblPrecioAcumulado.setText(formatoNumero(precioXunidad) + "");
-
+            
             String tama = cajaTamanno.getText();
 
             if (tama.equals("") || tama.equals("0")) {
@@ -592,7 +596,7 @@ public class FrmProducto extends javax.swing.JInternalFrame {
         panelStock.setLayout(panelStockLayout);
         panelStockLayout.setHorizontalGroup(
             panelStockLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelStockLayout.createSequentialGroup()
+            .addGroup(panelStockLayout.createSequentialGroup()
                 .addContainerGap(19, Short.MAX_VALUE)
                 .addGroup(panelStockLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelStockLayout.createSequentialGroup()
@@ -621,7 +625,7 @@ public class FrmProducto extends javax.swing.JInternalFrame {
         panelStockLayout.setVerticalGroup(
             panelStockLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelStockLayout.createSequentialGroup()
-                .addContainerGap(86, Short.MAX_VALUE)
+                .addContainerGap(94, Short.MAX_VALUE)
                 .addGroup(panelStockLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelStockLayout.createSequentialGroup()
                         .addComponent(jLabel10)
