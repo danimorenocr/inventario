@@ -948,7 +948,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         );
 
         btnAgregar.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
-        btnAgregar.setText("Agregar");
+        btnAgregar.setText("Actualizar");
         btnAgregar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
         btnAgregar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {

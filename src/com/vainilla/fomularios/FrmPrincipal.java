@@ -273,6 +273,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
         mSuministros.add(smProductList);
 
         smAncheta.setText("Anchetas");
+        smAncheta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                smAnchetaActionPerformed(evt);
+            }
+        });
         mSuministros.add(smAncheta);
 
         menuBar.add(mSuministros);
@@ -332,6 +337,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
         FrmProductoList ventanaProductoList = new FrmProductoList();
         agregarVentanaPanel(ventanaProductoList);
     }//GEN-LAST:event_smProductListActionPerformed
+
+    private void smAnchetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smAnchetaActionPerformed
+        FrmAncheta ventanaAncheta = new FrmAncheta();
+        agregarVentanaPanel(ventanaAncheta);
+    }//GEN-LAST:event_smAnchetaActionPerformed
 
     /**
      * @param args the command line arguments

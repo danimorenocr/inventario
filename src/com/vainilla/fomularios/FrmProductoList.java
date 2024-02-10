@@ -71,7 +71,7 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
 
     private void cargarDatosProducto(String ordencito) {
 
-        List<Producto> arrayProv;
+        List<Producto> arrayProd;
         DaoProducto miDao = new DaoProducto();
         String nomElim = "/com/vainilla/iconos/borrar.png";
         String rutaIconElim = this.getClass().getResource(nomElim).getPath();
@@ -83,9 +83,9 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
 
         modeloTabla.setNumRows(0);
 
-        arrayProv = miDao.consultar(ordencito);
+        arrayProd = miDao.consultar(ordencito);
 
-        arrayProv.forEach((producto) -> {
+        arrayProd.forEach((producto) -> {
             Object filita[] = new Object[19];
 
             filita[0] = producto.getCodProducto();
