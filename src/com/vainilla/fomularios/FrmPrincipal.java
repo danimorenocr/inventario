@@ -272,6 +272,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         });
         mSuministros.add(smProductList);
 
+        smAncheta.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         smAncheta.setText("Anchetas");
         smAncheta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -22,14 +23,13 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     private Integer codProducto = null;
     Integer seleccionarBuscar = 0;
     private String titulos[] = {"Nombre", "Stock", "Precio", "# Agregar", "Agregar"};
+    private String titulosCanasta[] = {"Nombre", "Cantidad", "Precio Total", "Eliminar"};
 
     private DefaultTableModel modeloTablaProducto = new DefaultTableModel(titulos, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
-            if (column == 3) {
-                return true;
-            }
-            return false;
+            //LA COLUMNA #3 LA HACE EDITABLE
+            return column == 3;
         }
 
         @Override
@@ -40,10 +40,26 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
             return Object.class;
         }
     };
+    private DefaultTableModel modeloTablaCanasta = new DefaultTableModel(titulosCanasta, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            if (columnIndex == 3) {
+                return ImageIcon.class;
+            }
+            return Object.class;
+        }
+    };
 
     public FrmAncheta() {
         initComponents();
         tablaProductos.setModel(modeloTablaProducto);
+        tablaCanasta.setModel(modeloTablaCanasta);
         cargarDatosProducto("cod_producto");
         cmbCategoriaProductos.setModel(modeloComboCat);
         cargarCategoria();
@@ -101,6 +117,71 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
 
     }
 
+    private void agregarCarrito() {
+        int selectedRow = tablaProductos.getSelectedRow();
+
+        String nomAdd = "/com/vainilla/iconos/borrar.png";
+        String rutaIconAdd = this.getClass().getResource(nomAdd).getPath();
+        ImageIcon addIcono = new ImageIcon(rutaIconAdd);
+
+        if (selectedRow != -1) {
+            DefaultTableModel modelTablaProducto = (DefaultTableModel) tablaProductos.getModel();
+            DefaultTableModel modelTablaCanasta = (DefaultTableModel) tablaCanasta.getModel();
+
+            // Obtener datos de la fila seleccionada
+            Object[] datosFila = new Object[modelTablaProducto.getColumnCount()];
+
+            for (int i = 0; i < datosFila.length - 2; i++) {
+                datosFila[i] = modelTablaProducto.getValueAt(selectedRow, i);
+            }
+
+            Object stock = modelTablaProducto.getValueAt(selectedRow, 1);
+            Object precioUni = modelTablaProducto.getValueAt(selectedRow, 2);
+            Object cantAgregar = modelTablaProducto.getValueAt(selectedRow, 3); 
+            System.out.println("precio: " + precioUni);
+
+            // Reemplazar el valor en la tabla canasta en la segunda columna de la fila por el valor editado
+            datosFila[1] = cantAgregar;
+
+            int cantRestar = 0;
+            int stockInicial = 0;
+            int precioUnidad = (int) precioUni;
+
+            if ((cantAgregar != null && cantAgregar instanceof String)) {
+                try {
+                    cantRestar = Integer.parseInt((String) cantAgregar);
+                } catch (NumberFormatException e) {
+                }
+            }
+
+            if ((stock instanceof Number)) {
+                try {
+                    stockInicial = ((Number) stock).intValue();
+                } catch (NumberFormatException e) {
+                }
+            }
+
+            int stockRestante = stockInicial - cantRestar;
+            int precioTotalProduct = cantRestar * precioUnidad;
+            
+            //AGREGAR EL PRECIO TOTAL EN LA TABLA CANASTA
+            datosFila[2] = precioTotalProduct;
+
+            //AGREGAR NUEVO STOCK A LA TABLA PRODUCTOS Y SETEAR EL CAMPO DE AGREGAR CANTIDAD DE PRODUCTOS
+            modelTablaProducto.setValueAt(stockRestante, selectedRow, 1);
+            modelTablaProducto.setValueAt("", selectedRow, 3);
+
+            //  AGREGAR LA IMAGEN A LA COLUMNA
+            datosFila[datosFila.length - 2] = addIcono;
+
+            // Agregar datos a la segunda tabla 
+            modelTablaCanasta.addRow(datosFila);
+
+        }
+        tablaCanasta.getColumnModel().getColumn(0).setPreferredWidth(150);
+        tablaCanasta.getColumnModel().getColumn(3).setPreferredWidth(50);
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -145,7 +226,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         lblTituloProd1 = new javax.swing.JLabel();
         jSeparator5 = new javax.swing.JSeparator();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tablaProductos1 = new javax.swing.JTable();
+        tablaCanasta = new javax.swing.JTable();
         lblTituloProd2 = new javax.swing.JLabel();
         lblTituloProd3 = new javax.swing.JLabel();
 
@@ -281,14 +362,12 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDescripLayout.createSequentialGroup()
                         .addGap(0, 25, Short.MAX_VALUE)
                         .addGroup(panelDescripLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelDescripLayout.createSequentialGroup()
-                                .addGroup(panelDescripLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelDescripLayout.createSequentialGroup()
-                                        .addComponent(lbl5)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(lblSubtotal, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(21, 21, 21))
+                            .addGroup(panelDescripLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelDescripLayout.createSequentialGroup()
+                                    .addComponent(lbl5)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(lblSubtotal, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(panelDescripLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addGroup(panelDescripLayout.createSequentialGroup()
                                     .addComponent(lbl1)
@@ -318,7 +397,8 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                                     .addComponent(lbl7)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(21, 21, 21))
                     .addComponent(lblTituloDescr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         panelDescripLayout.setVerticalGroup(
@@ -400,6 +480,11 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tablaProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaProductosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tablaProductos);
 
         javax.swing.GroupLayout panelProductosLayout = new javax.swing.GroupLayout(panelProductos);
@@ -439,8 +524,8 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         jSeparator5.setBackground(new java.awt.Color(65, 46, 152));
         jSeparator5.setForeground(new java.awt.Color(65, 46, 152));
 
-        tablaProductos1.setFont(new java.awt.Font("Fredoka", 0, 12)); // NOI18N
-        tablaProductos1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaCanasta.setFont(new java.awt.Font("Fredoka", 0, 12)); // NOI18N
+        tablaCanasta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -451,7 +536,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane2.setViewportView(tablaProductos1);
+        jScrollPane2.setViewportView(tablaCanasta);
 
         javax.swing.GroupLayout panelProductos1Layout = new javax.swing.GroupLayout(panelProductos1);
         panelProductos1.setLayout(panelProductos1Layout);
@@ -599,6 +684,13 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_cajaPublicidadActionPerformed
 
+    private void tablaProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProductosMouseClicked
+        int columnaSeleccionada = tablaProductos.getSelectedColumn();
+        if (columnaSeleccionada == 4) {
+            agregarCarrito();
+        }
+    }//GEN-LAST:event_tablaProductosMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBorrar;
@@ -642,7 +734,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     private javax.swing.JPanel panelDescrip;
     private javax.swing.JPanel panelProductos;
     private javax.swing.JPanel panelProductos1;
+    private javax.swing.JTable tablaCanasta;
     private javax.swing.JTable tablaProductos;
-    private javax.swing.JTable tablaProductos1;
     // End of variables declaration//GEN-END:variables
 }
