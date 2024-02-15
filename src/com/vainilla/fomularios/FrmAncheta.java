@@ -1,5 +1,6 @@
 package com.vainilla.fomularios;
 
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import com.vainilla.daos.DaoCategoriaProducto;
 import com.vainilla.daos.DaoProducto;
 import com.vainilla.entidades.CategoriaProducto;
@@ -22,6 +23,8 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
 
     private Integer codProducto = null;
     Integer seleccionarBuscar = 0;
+    Integer columnaSeleccionada;
+
     private String titulos[] = {"Nombre", "Stock", "Precio", "# Agregar", "Agregar"};
     private String titulosCanasta[] = {"Nombre", "Cantidad", "Precio Total", "Eliminar"};
 
@@ -66,11 +69,10 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     }
 
     private void cargarDatosProducto(String ordencito) {
-
         List<Producto> arrayProd;
         DaoProducto miDao = new DaoProducto();
 
-        String nomAdd = "/com/vainilla/iconos/borrar.png";
+        String nomAdd = "/com/vainilla/iconos/add.png";
         String rutaIconAdd = this.getClass().getResource(nomAdd).getPath();
         ImageIcon addIcono = new ImageIcon(rutaIconAdd);
 
@@ -118,70 +120,293 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     }
 
     private void agregarCarrito() {
-        int selectedRow = tablaProductos.getSelectedRow();
+        int filaSeleccionada = tablaProductos.getSelectedRow();
+
+        String nombreProduct, cantDigitadaTexto;
+        Integer stock, precioUni, cantDigitada, stockResultante, precioTotal;
 
         String nomAdd = "/com/vainilla/iconos/borrar.png";
         String rutaIconAdd = this.getClass().getResource(nomAdd).getPath();
         ImageIcon addIcono = new ImageIcon(rutaIconAdd);
 
-        if (selectedRow != -1) {
-            DefaultTableModel modelTablaProducto = (DefaultTableModel) tablaProductos.getModel();
-            DefaultTableModel modelTablaCanasta = (DefaultTableModel) tablaCanasta.getModel();
+        DefaultTableModel modelTablaProducto = (DefaultTableModel) tablaProductos.getModel();
+        DefaultTableModel modelTablaCanasta = (DefaultTableModel) tablaCanasta.getModel();
 
-            // Obtener datos de la fila seleccionada
-            Object[] datosFila = new Object[modelTablaProducto.getColumnCount()];
+        Object[] datosFila = new Object[modelTablaProducto.getColumnCount()];
 
-            for (int i = 0; i < datosFila.length - 2; i++) {
-                datosFila[i] = modelTablaProducto.getValueAt(selectedRow, i);
-            }
+        for (int i = 0; i < datosFila.length - 2; i++) {
+            datosFila[i] = modelTablaProducto.getValueAt(filaSeleccionada, i);
+        }
 
-            Object stock = modelTablaProducto.getValueAt(selectedRow, 1);
-            Object precioUni = modelTablaProducto.getValueAt(selectedRow, 2);
-            Object cantAgregar = modelTablaProducto.getValueAt(selectedRow, 3); 
-            System.out.println("precio: " + precioUni);
+        // OBTENER DATOS
+        nombreProduct = (String) modelTablaProducto.getValueAt(filaSeleccionada, 0);
+        stock = (int) modelTablaProducto.getValueAt(filaSeleccionada, 1);
+        precioUni = (int) modelTablaProducto.getValueAt(filaSeleccionada, 2);
+        cantDigitadaTexto = (String) modelTablaProducto.getValueAt(filaSeleccionada, 3);
 
-            // Reemplazar el valor en la tabla canasta en la segunda columna de la fila por el valor editado
-            datosFila[1] = cantAgregar;
+        //VERIFICAR QUE LA ENTRADA DE AGREGAR NO ESTE NULA
+        if (cantDigitadaTexto == null || cantDigitadaTexto == "") {
+            cantDigitadaTexto = "1";
+        }
 
-            int cantRestar = 0;
-            int stockInicial = 0;
-            int precioUnidad = (int) precioUni;
+        cantDigitada = Integer.valueOf(cantDigitadaTexto);
 
-            if ((cantAgregar != null && cantAgregar instanceof String)) {
-                try {
-                    cantRestar = Integer.parseInt((String) cantAgregar);
-                } catch (NumberFormatException e) {
+        //HACER OPERACIONES
+        stockResultante = stock - cantDigitada;
+        precioTotal = cantDigitada * precioUni;
+
+        //VERIFICAR SI LA CANTIDAD A AGREGAR EXISTE EN EL STOCK
+        if (cantDigitada <= stock && cantDigitada != 0) {
+
+            for (int i = 0; i < modelTablaCanasta.getRowCount(); i++) {
+                if (modelTablaCanasta.getValueAt(i, 0).equals(nombreProduct)) {
+                    
+                    //OBTENER DATOS TABLA CANASTA
+                    int cantCanasta, precioCanasta;
+                    cantCanasta = (int) modelTablaCanasta.getValueAt(i, 1);
+                    precioCanasta = (int) modelTablaCanasta.getValueAt(i, 2);
+
+                    //HACER OPERACIONES
+                    cantDigitada = cantDigitada + cantCanasta;
+                    precioTotal = precioTotal + precioCanasta;
+                    modelTablaCanasta.removeRow(i);
+                    break;
+
                 }
             }
-
-            if ((stock instanceof Number)) {
-                try {
-                    stockInicial = ((Number) stock).intValue();
-                } catch (NumberFormatException e) {
-                }
-            }
-
-            int stockRestante = stockInicial - cantRestar;
-            int precioTotalProduct = cantRestar * precioUnidad;
             
-            //AGREGAR EL PRECIO TOTAL EN LA TABLA CANASTA
-            datosFila[2] = precioTotalProduct;
+            //ACTUALIZAR DATOS
+            datosFila[1] = cantDigitada;
+            datosFila[2] = precioTotal;
 
             //AGREGAR NUEVO STOCK A LA TABLA PRODUCTOS Y SETEAR EL CAMPO DE AGREGAR CANTIDAD DE PRODUCTOS
-            modelTablaProducto.setValueAt(stockRestante, selectedRow, 1);
-            modelTablaProducto.setValueAt("", selectedRow, 3);
+            modelTablaProducto.setValueAt(stockResultante, filaSeleccionada, 1);
+            modelTablaProducto.setValueAt("", filaSeleccionada, 3);
 
-            //  AGREGAR LA IMAGEN A LA COLUMNA
+//          AGREGAR LA IMAGEN A LA COLUMNA
             datosFila[datosFila.length - 2] = addIcono;
 
             // Agregar datos a la segunda tabla 
             modelTablaCanasta.addRow(datosFila);
 
+        } else {
+            JOptionPane.showMessageDialog(panelCuerpo, "No existe la cantidad de productos ingresada", "Error", JOptionPane.ERROR_MESSAGE);
+            modelTablaProducto.setValueAt("", filaSeleccionada, 3);
         }
+
         tablaCanasta.getColumnModel().getColumn(0).setPreferredWidth(150);
         tablaCanasta.getColumnModel().getColumn(3).setPreferredWidth(50);
     }
-    
+
+//    private void agregarCarrito() {
+//        int selectedRow = tablaProductos.getSelectedRow();
+//
+//        String nomAdd = "/com/vainilla/iconos/borrar.png";
+//        String rutaIconAdd = this.getClass().getResource(nomAdd).getPath();
+//        ImageIcon addIcono = new ImageIcon(rutaIconAdd);
+//
+//        if (selectedRow != -1) {
+//            DefaultTableModel modelTablaProducto = (DefaultTableModel) tablaProductos.getModel();
+//            DefaultTableModel modelTablaCanasta = (DefaultTableModel) tablaCanasta.getModel();
+//
+//            // Obtener datos de la fila seleccionada
+//            Object[] datosFila = new Object[modelTablaProducto.getColumnCount()];
+//
+//            for (int i = 0; i < datosFila.length - 2; i++) {
+//                datosFila[i] = modelTablaProducto.getValueAt(selectedRow, i);
+//            }
+//
+//            Object nombre = modelTablaProducto.getValueAt(selectedRow, 0);
+//            Object stock = modelTablaProducto.getValueAt(selectedRow, 1);
+//            Object precioUni = modelTablaProducto.getValueAt(selectedRow, 2);
+//            Object cantAgregar = modelTablaProducto.getValueAt(selectedRow, 3);
+//
+//            int cantRestar = 0;
+//            int stockInicial = 0;
+//            int precioUnidad = (int) precioUni;
+//            String nombreProducto = (String) nombre;
+//
+//            if ((cantAgregar != null && cantAgregar instanceof String)) {
+//                try {
+//                    cantRestar = Integer.parseInt((String) cantAgregar);
+//                } catch (NumberFormatException e) {
+//                }
+//            }
+//
+//            if ((stock instanceof Number)) {
+//                try {
+//                    stockInicial = ((Number) stock).intValue();
+//                } catch (NumberFormatException e) {
+//                }
+//            }
+//
+//            int stockRestante = stockInicial - cantRestar;
+//            if (rootPaneCheckingEnabled) {
+//                 if ((cantRestar != 0) && (stockRestante >= 0)) {
+//                // Reemplazar el valor en la tabla canasta en la segunda columna de la fila por el valor editado
+//                datosFila[1] = cantAgregar;
+//
+//                int precioTotalProduct = cantRestar * precioUnidad;
+//
+//                //AGREGAR EL PRECIO TOTAL EN LA TABLA CANASTA
+//                datosFila[2] = precioTotalProduct;
+//
+//                //AGREGAR NUEVO STOCK A LA TABLA PRODUCTOS Y SETEAR EL CAMPO DE AGREGAR CANTIDAD DE PRODUCTOS
+//                modelTablaProducto.setValueAt(stockRestante, selectedRow, 1);
+//                modelTablaProducto.setValueAt("", selectedRow, 3);
+//
+//                //  AGREGAR LA IMAGEN A LA COLUMNA
+//                datosFila[datosFila.length - 2] = addIcono;
+//
+//                // Agregar datos a la segunda tabla 
+//                modelTablaCanasta.addRow(datosFila);
+//
+//            } else if (cantRestar == 0) {
+//                JOptionPane.showMessageDialog(panelCuerpo, "Ingrese la cantidad de productos para añadir al carrito", "Error", JOptionPane.ERROR_MESSAGE);
+//            } else {
+//                JOptionPane.showMessageDialog(panelCuerpo, "No existe la cantidad de productos ingresada", "Error", JOptionPane.ERROR_MESSAGE);
+//                modelTablaProducto.setValueAt("", selectedRow, 3);
+//            }
+//
+//        }
+//            }
+//           
+//        tablaCanasta.getColumnModel().getColumn(0).setPreferredWidth(150);
+//        tablaCanasta.getColumnModel().getColumn(3).setPreferredWidth(50);
+//    }
+//
+//    private void buscarRepetido(String nombreProducto) {
+//        String nombre = nombreProducto; // replace this with the keyword you're searching for
+//        DefaultTableModel modelTablaCanasta = (DefaultTableModel) tablaCanasta.getModel();
+//
+//        // Search for the keyword in the first column of each row
+//        for (int i = 0; i < modelTablaCanasta.getRowCount(); i++) {
+//            if (modelTablaCanasta.getValueAt(i, 0).toString().contains(nombre)) {
+//                // If the keyword is found, select the row
+//                tablaCanasta.setRowSelectionInterval(i, i);
+//                break;
+//            }
+//        }
+//    }
+//    private void agregarCarrito() {
+//        int selectedRow = tablaProductos.getSelectedRow();
+//        int cantRestar, stockInicial, precioUnidad, precioTotalProduct, stockRestante, cantActual;
+//        String nombreProducto;
+//
+//        String nomAdd = "/com/vainilla/iconos/borrar.png";
+//        String rutaIconAdd = this.getClass().getResource(nomAdd).getPath();
+//        ImageIcon addIcono = new ImageIcon(rutaIconAdd);
+//
+//        if (selectedRow != -1) {
+//            DefaultTableModel modelTablaProducto = (DefaultTableModel) tablaProductos.getModel();
+//            DefaultTableModel modelTablaCanasta = (DefaultTableModel) tablaCanasta.getModel();
+//
+//            // Obtener datos de la fila seleccionada
+//            Object[] datosFila = new Object[modelTablaProducto.getColumnCount()];
+//
+//            for (int i = 0; i < datosFila.length - 2; i++) {
+//                datosFila[i] = modelTablaProducto.getValueAt(selectedRow, i);
+//            }
+//
+//            Object nombre = modelTablaProducto.getValueAt(selectedRow, 0);
+//            Object stock = modelTablaProducto.getValueAt(selectedRow, 1);
+//            Object precioUni = modelTablaProducto.getValueAt(selectedRow, 2);
+//            Object cantAgregar = modelTablaProducto.getValueAt(selectedRow, 3);
+//            
+//            System.out.println("n: " + nombre + "s: " + stock + "pre: " + precioUni + "cant: " + cantAgregar);
+//
+//            cantRestar = 0;
+//            stockInicial = 0;
+//            precioUnidad = (int) precioUni;
+//            precioTotalProduct = 0;
+//
+//            nombreProducto = (String) nombre;
+//
+//            if ((cantAgregar != null && cantAgregar instanceof String)) {
+//                try {
+//                    cantRestar = Integer.parseInt((String) cantAgregar);
+//                } catch (NumberFormatException e) {
+//                }
+//            }
+//
+//            if ((stock instanceof Number)) {
+//                try {
+//                    stockInicial = ((Number) stock).intValue();
+//                } catch (NumberFormatException e) {
+//                }
+//            }
+//
+//            stockRestante = stockInicial - cantRestar;
+//            precioTotalProduct = cantRestar * precioUnidad;
+//            System.out.println("stockRes: " + stockRestante + "precioTotal: " + precioTotalProduct);
+//            cantActual = 0;
+//
+//            if ((cantRestar != 0) && (stockRestante >= 0)) {
+//
+//                for (int i = 0; i < modelTablaCanasta.getRowCount(); i++) {
+//                    if (modelTablaCanasta.getValueAt(i, 0).equals(nombreProducto)) {
+//                        // If it exists, update the quantity and total price
+//                        
+//                        System.out.println("entro");
+//                        Object cantidadActual = modelTablaCanasta.getValueAt(i, 1);
+//                        System.out.println("cantidadAct: " + cantidadActual);
+//
+//                        if ((cantidadActual != null && cantidadActual instanceof String)) {
+//                            try {
+//                                cantActual = Integer.parseInt((String) cantidadActual);
+//                                System.out.println("cantActua: " + cantActual);
+//                            } catch (NumberFormatException e) {
+//                            }
+//                        }
+//
+//                        int totalCant = cantActual + cantRestar;
+//                        
+//                        System.out.println("total: " + totalCant);
+//
+//                        int precioActual = (int) modelTablaCanasta.getValueAt(i, 2);
+//                        int precioFinal = precioTotalProduct + precioActual;
+//                        System.out.println("preciofin: " + precioFinal);
+//                        modelTablaCanasta.setValueAt(totalCant, i, 1);
+//                        modelTablaCanasta.setValueAt(precioFinal, i, 2);
+//                        return; // Exit the method to avoid adding a new row
+//                    } else {
+//
+//                        // Reemplazar el valor en la tabla canasta en la segunda columna de la fila por el valor editado
+//                        datosFila[1] = cantAgregar;
+//                        System.out.println("cantAgregar " + cantAgregar);
+//
+//                        //AGREGAR EL PRECIO TOTAL EN LA TABLA CANASTA
+//                        datosFila[2] = precioTotalProduct;
+//                    }
+//                }
+//
+//                //AGREGAR NUEVO STOCK A LA TABLA PRODUCTOS Y SETEAR EL CAMPO DE AGREGAR CANTIDAD DE PRODUCTOS
+//                modelTablaProducto.setValueAt(stockRestante, selectedRow, 1);
+//                modelTablaProducto.setValueAt("", selectedRow, 3);
+//
+//                //  AGREGAR LA IMAGEN A LA COLUMNA
+//                datosFila[datosFila.length - 2] = addIcono;
+//
+//                // Agregar datos a la segunda tabla 
+//                modelTablaCanasta.addRow(datosFila);
+//
+//            } else if (cantRestar == 0) {
+//                JOptionPane.showMessageDialog(panelCuerpo, "Ingrese la cantidad de productos para añadir al carrito", "Error", JOptionPane.ERROR_MESSAGE);
+//            } else {
+//                JOptionPane.showMessageDialog(panelCuerpo, "No existe la cantidad de productos ingresada", "Error", JOptionPane.ERROR_MESSAGE);
+//                modelTablaProducto.setValueAt("", selectedRow, 3);
+//            }
+//
+//        }
+//
+//        tablaCanasta.getColumnModel().getColumn(0).setPreferredWidth(150);
+//        tablaCanasta.getColumnModel().getColumn(3).setPreferredWidth(50);
+//    }
+    private void eliminarCanasta() {
+        int selectedRow = tablaCanasta.getSelectedRow();
+        DefaultTableModel modelTablaCanasta = (DefaultTableModel) tablaCanasta.getModel();
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -480,6 +705,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tablaProductos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         tablaProductos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaProductosMouseClicked(evt);
@@ -536,6 +762,12 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tablaCanasta.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        tablaCanasta.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaCanastaMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tablaCanasta);
 
         javax.swing.GroupLayout panelProductos1Layout = new javax.swing.GroupLayout(panelProductos1);
@@ -685,11 +917,18 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_cajaPublicidadActionPerformed
 
     private void tablaProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProductosMouseClicked
-        int columnaSeleccionada = tablaProductos.getSelectedColumn();
+        columnaSeleccionada = tablaProductos.getSelectedColumn();
         if (columnaSeleccionada == 4) {
             agregarCarrito();
         }
     }//GEN-LAST:event_tablaProductosMouseClicked
+
+    private void tablaCanastaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaCanastaMouseClicked
+        columnaSeleccionada = tablaCanasta.getSelectedColumn();
+        if (columnaSeleccionada == 3) {
+            eliminarCanasta();
+        }
+    }//GEN-LAST:event_tablaCanastaMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
