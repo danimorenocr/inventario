@@ -4,10 +4,9 @@ import com.vainilla.daos.DaoCategoriaProducto;
 import com.vainilla.daos.DaoProducto;
 import com.vainilla.entidades.CategoriaProducto;
 import com.vainilla.entidades.Producto;
-import java.text.NumberFormat;
+import com.vainilla.funciones.Funciones;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -22,7 +21,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     private Map<Integer, Integer> codigosCategoria = new HashMap<>();
 
     private DefaultComboBoxModel modeloComboCat = new DefaultComboBoxModel();
-    NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(Locale.getDefault());
+   
 
     private Integer codProducto = null;
     Integer columnaSeleccionada;
@@ -67,16 +66,20 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         tablaCanasta.setModel(modeloTablaCanasta);
         cargarDatosProducto("nombre_producto");
         cargarCategoria();
+        formatoCajas();
+
     }
 
-    public String formatoNumero(int numero) {
-        String forma = formatoMoneda.format(numero).replace(",00", "");
-        return forma;
+  
+
+    private void formatoCajas() {
+        Funciones.formatoMondeaCajas(cajaPublicidad);
+        Funciones.formatoMondeaCajas(cajaOtros);
+        Funciones.formatoMondeaCajas(cajaDomicilio);
+        Funciones.formatoMondeaCajas(cajaUtilidad);
     }
 
-    public String formatoNatural(String numero) {
-        return numero.replaceAll("[^0-9]", "");
-    }
+    
 
     private void cargarDatosProducto(String ordencito) {
         List<Producto> arrayProd;
@@ -95,7 +98,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
 
             filita[0] = producto.getNombreProducto();
             filita[1] = producto.getStock();
-            filita[2] = formatoNumero(producto.getPrecioUnidadEnvio());
+            filita[2] = Funciones.formatoNumero(producto.getPrecioUnidadEnvio());
             filita[4] = addIcono;
 
             modeloTablaProducto.addRow(filita);
@@ -151,7 +154,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         // OBTENER DATOS
         nombreProduct = (String) modelTablaProducto.getValueAt(filaSeleccionada, 0);
         stock = (int) modelTablaProducto.getValueAt(filaSeleccionada, 1);
-        precioUniTexto = formatoNatural((String) modelTablaProducto.getValueAt(filaSeleccionada, 2));
+        precioUniTexto = Funciones.formatoNatural((String) modelTablaProducto.getValueAt(filaSeleccionada, 2));
         cantDigitadaTexto = (String) modelTablaProducto.getValueAt(filaSeleccionada, 3);
 
         //VERIFICAR QUE LA ENTRADA DE AGREGAR NO ESTE NULA
@@ -175,7 +178,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                     //OBTENER DATOS TABLA CANASTA
                     int cantCanasta, precioCanasta;
                     cantCanasta = (int) modelTablaCanasta.getValueAt(i, 1);
-                    precioCanastaTexto = formatoNatural((String) modelTablaCanasta.getValueAt(i, 2));
+                    precioCanastaTexto = Funciones.formatoNatural((String) modelTablaCanasta.getValueAt(i, 2));
 
                     precioCanasta = Integer.parseInt(precioCanastaTexto);
 
@@ -190,7 +193,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
 
             //ACTUALIZAR DATOS
             datosFila[1] = cantDigitada;
-            datosFila[2] = formatoNumero(precioTotal);
+            datosFila[2] = Funciones.formatoNumero(precioTotal);
 
             //AGREGAR NUEVO STOCK A LA TABLA PRODUCTOS Y SETEAR EL CAMPO DE AGREGAR CANTIDAD DE PRODUCTOS
             modelTablaProducto.setValueAt(stockResultante, filaSeleccionada, 1);
@@ -206,7 +209,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
             int precioCanasta = sumarColumnaPrecios(tablaCanasta, 2);
 
             lblCantProductos.setText(cantProductosTotal + "");
-            lblValorCanasta.setText(formatoNumero(precioCanasta) + "");
+            lblValorCanasta.setText(Funciones.formatoNumero(precioCanasta) + "");
 
         } else {
             JOptionPane.showMessageDialog(panelCuerpo, "No existe la cantidad de productos ingresada", "Error", JOptionPane.ERROR_MESSAGE);
@@ -219,6 +222,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         tablaCanasta.getColumnModel().getColumn(1).setCellRenderer(centrado);
         tablaCanasta.getColumnModel().getColumn(0).setPreferredWidth(150);
         tablaCanasta.getColumnModel().getColumn(3).setPreferredWidth(50);
+        descripcionCargar();
     }
 
     private void eliminarCanasta() {
@@ -233,10 +237,10 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         cantAgregada = (int) modelTablaCanasta.getValueAt(filaSeleccionadaCanasta, 1);
         cantProductos = Integer.parseInt(lblCantProductos.getText());
         precio = (String) modelTablaCanasta.getValueAt(filaSeleccionadaCanasta, 2);
-        precio = formatoNatural(precio);
+        precio = Funciones.formatoNatural(precio);
         precioTotal = Integer.parseInt(precio);
 
-        precioCanasta = Integer.parseInt(formatoNatural(lblValorCanasta.getText()));
+        precioCanasta = Integer.parseInt(Funciones.formatoNatural(lblValorCanasta.getText()));
 
         for (int i = 0; i < modeloTablaProducto.getRowCount(); i++) {
             if (modeloTablaProducto.getValueAt(i, 0).equals(nombreProduct)) {
@@ -252,13 +256,14 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                 lblCantProductos.setText(cantProductosFinal + "");
 
                 precioTotal = precioCanasta - precioTotal;
-                lblValorCanasta.setText(formatoNumero(precioTotal));
+                lblValorCanasta.setText(Funciones.formatoNumero(precioTotal));
                 break;
 
             }
         }
 
         modelTablaCanasta.removeRow(filaSeleccionadaCanasta);
+        descripcionCargar();
 
     }
 
@@ -308,7 +313,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
 
             filita[0] = producto.getNombreProducto();
             filita[1] = producto.getStock();
-            filita[2] = formatoNumero(producto.getPrecioUnidadEnvio());
+            filita[2] = Funciones.formatoNumero(producto.getPrecioUnidadEnvio());
             filita[4] = addIcono;
 
             modeloTablaProducto.addRow(filita);
@@ -320,6 +325,56 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         centrado.setHorizontalAlignment(JLabel.CENTER);
         tablaProductos.getColumnModel().getColumn(1).setCellRenderer(centrado);
         tablaProductos.getColumnModel().getColumn(3).setCellRenderer(centrado);
+    }
+
+    private void descripcionCargar() {
+        try {
+            Integer canasta, publicidad, otros, domicilio, subTotal;
+            String publicidadT, otrosT, domicilioT;
+
+            publicidadT = Funciones.formatoNatural(cajaPublicidad.getText());
+            otrosT = Funciones.formatoNatural(cajaOtros.getText());
+            domicilioT = Funciones.formatoNatural(cajaDomicilio.getText());
+
+            if (publicidadT.equals("")) {
+                publicidadT = "0";
+            }
+            if (otrosT.equals("")) {
+                otrosT = "0";
+            }
+            if (domicilioT.equals("")) {
+                domicilioT = "0";
+            }
+
+            canasta = Integer.valueOf(Funciones.formatoNatural(lblValorCanasta.getText()));
+            publicidad = Integer.valueOf(publicidadT);
+            otros = Integer.valueOf(otrosT);
+            domicilio = Integer.valueOf(domicilioT);
+            subTotal = canasta + publicidad + otros + domicilio;
+            lblSubtotal.setText(Funciones.formatoNumero(subTotal));
+            descripcionTotal();
+        } catch (NumberFormatException e) {
+        }
+    }
+
+    private void descripcionTotal() {
+        try {
+            Integer subtotal, utilidad, total;
+            String utilidadT;
+
+            utilidadT = Funciones.formatoNatural(cajaUtilidad.getText());
+            if (utilidadT.equals("")) {
+                utilidadT = "0";
+            }
+
+            subtotal = Integer.valueOf(Funciones.formatoNatural(lblSubtotal.getText()));
+            utilidad = Integer.valueOf(utilidadT);
+            total = subtotal + utilidad;
+            lblTotal.setText(Funciones.formatoNumero(total));
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(panelCuerpo, "Ingresa datos validos", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -449,16 +504,41 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                 cajaPublicidadActionPerformed(evt);
             }
         });
+        cajaPublicidad.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                cajaPublicidadKeyReleased(evt);
+            }
+        });
 
         cajaOtros.setBackground(new java.awt.Color(231, 231, 234));
         cajaOtros.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
         cajaOtros.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         cajaOtros.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
+        cajaOtros.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cajaOtrosActionPerformed(evt);
+            }
+        });
+        cajaOtros.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                cajaOtrosKeyReleased(evt);
+            }
+        });
 
         cajaDomicilio.setBackground(new java.awt.Color(231, 231, 234));
         cajaDomicilio.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
         cajaDomicilio.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         cajaDomicilio.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
+        cajaDomicilio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cajaDomicilioActionPerformed(evt);
+            }
+        });
+        cajaDomicilio.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                cajaDomicilioKeyReleased(evt);
+            }
+        });
 
         jSeparator1.setBackground(new java.awt.Color(65, 46, 152));
         jSeparator1.setForeground(new java.awt.Color(65, 46, 152));
@@ -479,6 +559,11 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         cajaUtilidad.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
         cajaUtilidad.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         cajaUtilidad.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
+        cajaUtilidad.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                cajaUtilidadKeyReleased(evt);
+            }
+        });
 
         jSeparator2.setBackground(new java.awt.Color(65, 46, 152));
         jSeparator2.setForeground(new java.awt.Color(65, 46, 152));
@@ -845,6 +930,30 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
 
         buscarDato("%" + cajaBuscarProduct.getText().toUpperCase() + "%", "nombre_producto");
     }//GEN-LAST:event_cajaBuscarProductKeyReleased
+
+    private void cajaDomicilioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaDomicilioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cajaDomicilioActionPerformed
+
+    private void cajaOtrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaOtrosActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cajaOtrosActionPerformed
+
+    private void cajaPublicidadKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaPublicidadKeyReleased
+        descripcionCargar();
+    }//GEN-LAST:event_cajaPublicidadKeyReleased
+
+    private void cajaOtrosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaOtrosKeyReleased
+        descripcionCargar();
+    }//GEN-LAST:event_cajaOtrosKeyReleased
+
+    private void cajaDomicilioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaDomicilioKeyReleased
+        descripcionCargar();
+    }//GEN-LAST:event_cajaDomicilioKeyReleased
+
+    private void cajaUtilidadKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaUtilidadKeyReleased
+        descripcionTotal();
+    }//GEN-LAST:event_cajaUtilidadKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
