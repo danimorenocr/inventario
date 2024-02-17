@@ -4,7 +4,6 @@ import com.vainilla.daos.DaoCategoriaProducto;
 import com.vainilla.daos.DaoProducto;
 import com.vainilla.entidades.CategoriaProducto;
 import com.vainilla.entidades.Producto;
-import com.vainilla.funciones.Funciones;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +25,6 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
     private Integer codProducto = null;
-    Integer seleccionarBuscar = 0;
     Integer columnaSeleccionada;
 
     private String titulos[] = {"Nombre", "Stock", "Precio", "# Agregar", "Agregar"};
@@ -67,8 +65,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         initComponents();
         tablaProductos.setModel(modeloTablaProducto);
         tablaCanasta.setModel(modeloTablaCanasta);
-        cargarDatosProducto("cod_producto");
-        cmbCategoriaProductos.setModel(modeloComboCat);
+        cargarDatosProducto("nombre_producto");
         cargarCategoria();
     }
 
@@ -218,7 +215,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
 
         DefaultTableCellRenderer centrado = new DefaultTableCellRenderer();
         centrado.setHorizontalAlignment(JLabel.CENTER);
-        
+
         tablaCanasta.getColumnModel().getColumn(1).setCellRenderer(centrado);
         tablaCanasta.getColumnModel().getColumn(0).setPreferredWidth(150);
         tablaCanasta.getColumnModel().getColumn(3).setPreferredWidth(50);
@@ -237,8 +234,8 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         cantProductos = Integer.parseInt(lblCantProductos.getText());
         precio = (String) modelTablaCanasta.getValueAt(filaSeleccionadaCanasta, 2);
         precio = formatoNatural(precio);
-        precioTotal = Integer.parseInt(precio);      
-        
+        precioTotal = Integer.parseInt(precio);
+
         precioCanasta = Integer.parseInt(formatoNatural(lblValorCanasta.getText()));
 
         for (int i = 0; i < modeloTablaProducto.getRowCount(); i++) {
@@ -293,6 +290,38 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         return total;
     }
 
+    private void buscarDato(String dato, String campo) {
+
+        List<Producto> arrayProd;
+        DaoProducto miDao = new DaoProducto();
+
+        String nomAdd = "/com/vainilla/iconos/add.png";
+        String rutaIconAdd = this.getClass().getResource(nomAdd).getPath();
+        ImageIcon addIcono = new ImageIcon(rutaIconAdd);
+
+        modeloTablaProducto.setNumRows(0);
+
+        arrayProd = miDao.buscarDato(dato, campo);
+
+        arrayProd.forEach((producto) -> {
+            Object filita[] = new Object[5];
+
+            filita[0] = producto.getNombreProducto();
+            filita[1] = producto.getStock();
+            filita[2] = formatoNumero(producto.getPrecioUnidadEnvio());
+            filita[4] = addIcono;
+
+            modeloTablaProducto.addRow(filita);
+
+        });
+        tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(200);
+
+        DefaultTableCellRenderer centrado = new DefaultTableCellRenderer();
+        centrado.setHorizontalAlignment(JLabel.CENTER);
+        tablaProductos.getColumnModel().getColumn(1).setCellRenderer(centrado);
+        tablaProductos.getColumnModel().getColumn(3).setCellRenderer(centrado);
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -304,7 +333,6 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         cmbAnchetas = new javax.swing.JComboBox<>();
         cajaBuscarProduct = new javax.swing.JTextField();
         cajaNombre = new javax.swing.JTextField();
-        cmbCategoriaProductos = new javax.swing.JComboBox<>();
         panelDescrip = new javax.swing.JPanel();
         lblTituloDescr = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
@@ -363,16 +391,16 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         cajaBuscarProduct.setFont(new java.awt.Font("Fredoka", 0, 16)); // NOI18N
         cajaBuscarProduct.setForeground(new java.awt.Color(65, 46, 152));
         cajaBuscarProduct.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(65, 46, 152), 3, true));
+        cajaBuscarProduct.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                cajaBuscarProductKeyReleased(evt);
+            }
+        });
 
         cajaNombre.setBackground(new java.awt.Color(231, 231, 234));
         cajaNombre.setFont(new java.awt.Font("Fredoka", 0, 16)); // NOI18N
         cajaNombre.setForeground(new java.awt.Color(65, 46, 152));
         cajaNombre.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(65, 46, 152), 3, true));
-
-        cmbCategoriaProductos.setBackground(new java.awt.Color(231, 231, 234));
-        cmbCategoriaProductos.setFont(new java.awt.Font("Fredoka Medium", 0, 16)); // NOI18N
-        cmbCategoriaProductos.setForeground(new java.awt.Color(65, 46, 152));
-        cmbCategoriaProductos.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(65, 46, 152), 3, true));
 
         panelDescrip.setBackground(new java.awt.Color(231, 231, 234));
         panelDescrip.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(65, 46, 152), 3, true));
@@ -718,9 +746,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                         .addGap(41, 41, 41)
                         .addComponent(lblTituloProd2, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(cajaBuscarProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(66, 66, 66)
-                        .addComponent(cmbCategoriaProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(cajaBuscarProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelContenedorLayout.createSequentialGroup()
@@ -755,12 +781,11 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                             .addComponent(btnCrear, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnBorrar, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(panelContenedorLayout.createSequentialGroup()
-                        .addGap(39, 39, 39)
+                        .addGap(41, 41, 41)
                         .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(cajaBuscarProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cmbCategoriaProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblTituloProd2))
-                        .addGap(43, 43, 43)
+                        .addGap(44, 44, 44)
                         .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(panelProductos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(panelProductos1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
@@ -816,6 +841,11 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_tablaCanastaMouseClicked
 
+    private void cajaBuscarProductKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaBuscarProductKeyReleased
+
+        buscarDato("%" + cajaBuscarProduct.getText().toUpperCase() + "%", "nombre_producto");
+    }//GEN-LAST:event_cajaBuscarProductKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBorrar;
@@ -828,7 +858,6 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     private javax.swing.JTextField cajaUtilidad;
     private javax.swing.JCheckBox chkPersonalizado;
     private javax.swing.JComboBox<String> cmbAnchetas;
-    private javax.swing.JComboBox<String> cmbCategoriaProductos;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;

@@ -53,7 +53,7 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
     public FrmProductoList() {
         initComponents();
         tablaDatos.setModel(modeloTabla);
-        cargarDatosProducto("");
+        cargarDatosProducto("nombre_producto");
         cmbBuscar.setSelectedIndex(10);
         lblTotal.setText(armarLineaCantidad());
     }
@@ -138,7 +138,6 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
     }
 
     private String campoBuscar(int select) {
-        System.out.println("indice: " + select);
         String campo = "";
         switch (select) {
             case 0 -> {
@@ -200,7 +199,7 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
 
     private void buscarDato(String dato, String campo) {
 
-        List<Producto> arrayProv;
+        List<Producto> arrayProd;
         DaoProducto miDao = new DaoProducto();
         String nomElim = "/com/vainilla/iconos/borrar.png";
         String rutaIconElim = this.getClass().getResource(nomElim).getPath();
@@ -212,9 +211,9 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
 
         modeloTabla.setNumRows(0);
 
-        arrayProv = miDao.buscarDato(dato, campo);
+        arrayProd = miDao.buscarDato(dato, campo);
 
-        arrayProv.forEach((producto) -> {
+        arrayProd.forEach((producto) -> {
             Object filita[] = new Object[19];
 
             filita[0] = producto.getCodProducto();
@@ -538,7 +537,7 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
             floatante.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    cargarDatosProducto("");
+                    cargarDatosProducto("nombre_producto");
                     lblTotal.setText(armarLineaCantidad());
                 }
 
@@ -562,7 +561,7 @@ public class FrmProductoList extends javax.swing.JInternalFrame {
                 if (siElimino(codProducto)) {
                     DaoProducto daoElim = new DaoProducto();
                     if (daoElim.eliminar(codProducto)) {
-                        cargarDatosProducto("");
+                        cargarDatosProducto("nombre_producto");
                         lblTotal.setText(armarLineaCantidad());
                         JOptionPane.showMessageDialog(panelCuerpo, "Eliminación Exitosa", "Información", JOptionPane.INFORMATION_MESSAGE);
                     } else {

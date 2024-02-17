@@ -13,7 +13,6 @@ import java.awt.event.WindowEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +27,6 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 public class FrmProducto extends javax.swing.JInternalFrame {
@@ -117,11 +114,13 @@ public class FrmProducto extends javax.swing.JInternalFrame {
         List<Producto> arrayProd;
         DaoProducto dao = new DaoProducto();
         arrayProd = dao.buscarDato(nombre, "nombre_producto");
+
         System.out.println("datos: " + arrayProd);
 
         if (arrayProd.isEmpty()) {
             existencia = false;
         }
+
         System.out.println("existencia: " + existencia);
         return existencia;
     }
@@ -203,7 +202,6 @@ public class FrmProducto extends javax.swing.JInternalFrame {
             Object[][] camposNoCheck = {
                 {cajaStock.getText(), "Ingrese la cantidad de stock"},
                 {cajaPrecioTotal.getText(), "Ingrese el precio total del producto"},
-                {cajaTamanno.getText(), "Ingrese el tamaño del producto"},
                 {lblPrecioMetro.getText(), "Ingrese el Precio del Metro"},
                 {lblPrecioUnidad.getText(), "Revise el stock"}
             };
@@ -305,15 +303,16 @@ public class FrmProducto extends javax.swing.JInternalFrame {
             Integer stock = Integer.valueOf(cajaStock.getText());
             Integer precioFull = Integer.valueOf(cajaPrecioTotal.getText());
             Integer precioXunidad = precioFull / stock;
-            
+
             lblPrecioUnidad.setText(formatoNumero(precioXunidad) + "");
             lblPrecioAcumulado.setText(formatoNumero(precioXunidad) + "");
-            
+
             String tama = cajaTamanno.getText();
 
             if (tama.equals("") || tama.equals("0")) {
-                lblPrecioMetro.setText("0");
                 cajaTamanno.setText("");
+                lblPrecioMetro.setText("0");
+                lblTamEnvio.setText("0");
             } else {
                 Integer tam = Integer.valueOf(cajaTamanno.getText());
                 Integer precioMetro = precioXunidad / tam;

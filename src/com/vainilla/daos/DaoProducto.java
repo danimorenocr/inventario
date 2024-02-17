@@ -221,8 +221,8 @@ public class DaoProducto extends Conexion implements Funcionalidad<Producto> {
             consulta.setDouble(12, elObjeto.getTamanno());
             consulta.setInt(13, elObjeto.getPrecioMetro());
             consulta.setInt(14, elObjeto.getPrecioUnidadEnvio());
-            consulta.setInt(15, elObjeto.getCodProveedor().getCodProveedor());
-            consulta.setInt(16, elObjeto.getCodCategoriaProducto().getCodCategoria());
+            consulta.setInt(15, elObjeto.getCodCategoriaProducto().getCodCategoria());
+            consulta.setInt(16, elObjeto.getCodProveedor().getCodProveedor());
             consulta.setInt(17, elObjeto.getUdAdquiridasEnvio());
             consulta.setInt(18, elObjeto.getCodProducto());
 

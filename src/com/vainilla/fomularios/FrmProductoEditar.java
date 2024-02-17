@@ -32,8 +32,8 @@ public class FrmProductoEditar extends javax.swing.JDialog {
     private final Producto objActualizar;
     NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
-    private Map<Integer, Integer> losCodigosProv = new HashMap<>();
-    private Map<Integer, Integer> losCodigosCat = new HashMap<>();
+    private final Map<Integer, Integer> losCodigosProv = new HashMap<>();
+    private final Map<Integer, Integer> losCodigosCat = new HashMap<>();
     private final DefaultComboBoxModel modeloComboProv = new DefaultComboBoxModel();
     private final DefaultComboBoxModel modeloComboCat = new DefaultComboBoxModel();
     private Integer indiceProv;
@@ -42,9 +42,9 @@ public class FrmProductoEditar extends javax.swing.JDialog {
     public FrmProductoEditar(java.awt.Frame parent, boolean modal, Producto objExterno) {
         super(parent, modal);
         initComponents();
-        objActualizar = objExterno;
         cmbProveedor.setModel(modeloComboProv);
         cmbCat.setModel(modeloComboCat);
+        objActualizar = objExterno;
         cargarProveedor();
         cargarCat();
         cargarDatos();
@@ -64,32 +64,31 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         }
     }
 
-    private void cargarCategoria(String orden) {
-        modeloComboCat.removeAllElements();
-        List<CategoriaProducto> arrayCat;
-        Integer indice = 0;
-
-        DaoCategoriaProducto dao = new DaoCategoriaProducto();
-        arrayCat = dao.consultar(orden);
-        losCodigosCat.put(0, 0);
-        modeloComboCat.addElement("SELECCIONE LA CATEGORIA");
-
-        for (CategoriaProducto categoria : arrayCat) {
-            indice++;
-
-            losCodigosCat.put(indice, categoria.getCodCategoria());
-            modeloComboCat.addElement(categoria.getNombreCategoria());
-        }
-
-    }
-
+//    private void cargarCategoria(String orden) {
+//        modeloComboCat.removeAllElements();
+//        List<CategoriaProducto> arrayCat;
+//        Integer indice = 0;
+//
+//        DaoCategoriaProducto dao = new DaoCategoriaProducto();
+//        arrayCat = dao.consultar(orden);
+//        losCodigosCat.put(0, 0);
+//        modeloComboCat.addElement("SELECCIONE LA CATEGORIA");
+//
+//        for (CategoriaProducto categoria : arrayCat) {
+//            indice++;
+//
+//            losCodigosCat.put(indice, categoria.getCodCategoria());
+//            modeloComboCat.addElement(categoria.getNombreCategoria());
+//        }
+//
+//    }
     private void cargarProveedor() {
 
         List<Proveedor> arrProveedor;
         int indice = -1;
 
         DaoProveedor miDao = new DaoProveedor();
-        arrProveedor = miDao.consultar("");
+        arrProveedor = miDao.consultar("cod_proveedor");
         for (Proveedor miProv : arrProveedor) {
             indice++;
             losCodigosProv.put(indice, miProv.getCodProveedor());
@@ -106,18 +105,20 @@ public class FrmProductoEditar extends javax.swing.JDialog {
     private void cargarCat() {
 
         List<CategoriaProducto> arrCat;
-        int indice = -1;
+        int indice = 0;
 
         DaoCategoriaProducto miDao = new DaoCategoriaProducto();
-        arrCat = miDao.consultar("");
+        arrCat = miDao.consultar("cod_categoria");
+
         for (CategoriaProducto miCat : arrCat) {
-            indice++;
             losCodigosCat.put(indice, miCat.getCodCategoria());
             modeloComboCat.addElement(miCat.getNombreCategoria());
 
             if (Objects.equals(objActualizar.getCodCategoriaProducto().getCodCategoria(), miCat.getCodCategoria())) {
                 indiceCat = indice;
+                System.out.println("cat: " + miCat.getNombreCategoria());
             }
+            indice++;
 
         }
         cmbCat.setSelectedIndex(indiceCat);
@@ -172,8 +173,6 @@ public class FrmProductoEditar extends javax.swing.JDialog {
 
         // Definir los campos y sus respectivos nombres para los mensajes de advertencia
         Object[][] campos = {
-            {cmbProveedor.getSelectedIndex(), "Seleccione un proveedor"},
-            {cmbCat.getSelectedIndex(), "Seleccione una categoría"},
             {cajaNombre.getText(), "Digite el nombre del producto"},
             {fCompra.getDate(), "Seleccione una fecha de compra"},
             {fVencimiento.getDate(), "Seleccione una fecha de vencimiento"},};
@@ -195,7 +194,6 @@ public class FrmProductoEditar extends javax.swing.JDialog {
             Object[][] camposNoCheck = {
                 {cajaStock.getText(), "Ingrese la cantidad de stock"},
                 {cajaPrecioTotal.getText(), "Ingrese el precio total del producto"},
-                {cajaTamanno.getText(), "Ingrese el tamaño del producto"},
                 {lblPrecioMetro.getText(), "Mensaje correspondiente para lblPrecioMetro"},
                 {lblPrecioUnidad.getText(), "Mensaje correspondiente para lblPrecioUnidad"}
             };
@@ -258,13 +256,18 @@ public class FrmProductoEditar extends javax.swing.JDialog {
 
     private boolean verificarNombre(String nombre) {
         boolean existencia = true;
-
+        int codigoExistente = objActualizar.getCodProducto();
         List<Producto> arrayProd;
         DaoProducto dao = new DaoProducto();
         arrayProd = dao.buscarDato(nombre, "nombre_producto");
         System.out.println("datos: " + arrayProd);
 
-        if (arrayProd.isEmpty()) {
+        if (!arrayProd.isEmpty()) {
+            Producto primerProducto = arrayProd.get(0); // Obtiene el primer producto del array
+            if (codigoExistente == primerProducto.getCodProducto()) {
+                existencia = false;
+            }
+        } else {
             existencia = false;
         }
         System.out.println("existencia: " + existencia);
@@ -813,7 +816,6 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         jLabel5.setText("Categoria:");
 
         cmbCat.setFont(new java.awt.Font("Fredoka", 0, 16)); // NOI18N
-        cmbCat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione la categoria:" }));
         cmbCat.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
         cmbCat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -822,7 +824,6 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         });
 
         cmbProveedor.setFont(new java.awt.Font("Fredoka", 0, 16)); // NOI18N
-        cmbProveedor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione el proveedor:" }));
         cmbProveedor.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(242, 223, 91), 3, true));
 
         jLabel6.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
@@ -1277,7 +1278,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
         windowCat.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                cargarCategoria("cod_categoria");
+//                cargarCategoria("cod_categoria");
             }
 
         });
@@ -1299,9 +1300,6 @@ public class FrmProductoEditar extends javax.swing.JDialog {
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         if (estaTodoBien()) {
-
-            Integer indiceCat = cmbCat.getSelectedIndex();
-            Integer indiceProv = cmbProveedor.getSelectedIndex();
 
             String nombre = cajaNombre.getText().toUpperCase();
             Date fechaCompra = fCompra.getDate();
@@ -1342,11 +1340,22 @@ public class FrmProductoEditar extends javax.swing.JDialog {
 
             }
 
-            Integer codSeleccionadoProv = losCodigosProv.get(indiceProv);
+            indiceCat = cmbCat.getSelectedIndex();
+            indiceProv = cmbProveedor.getSelectedIndex();
+            System.out.println("indice cat: " + indiceCat);
+            System.out.println("indice prov: " + indiceProv);
+
             Integer codSeleccionadoCat = losCodigosCat.get(indiceCat);
+            Integer codSeleccionadoProv = losCodigosProv.get(indiceProv);
+
+            System.out.println("indice cod_cat: " + codSeleccionadoCat);
+            System.out.println("indice cod_prov: " + codSeleccionadoProv);
 
             Proveedor objProveedor = new Proveedor(codSeleccionadoProv, "", "", "", 0);
             CategoriaProducto objCategorias = new CategoriaProducto(codSeleccionadoCat, "", 0);
+
+            System.out.println("data cat: " + objCategorias);
+            System.out.println("data prov: " + objProveedor);
 
             DaoProducto daoProducto = new DaoProducto();
             objActualizar.setNumeroCajas(numCajas);
