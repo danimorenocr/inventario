@@ -1,9 +1,12 @@
 package com.vainilla.fomularios;
 
+import com.vainilla.daos.DaoAncheta;
 import com.vainilla.daos.DaoCategoriaProducto;
 import com.vainilla.daos.DaoProducto;
+import com.vainilla.entidades.Ancheta;
 import com.vainilla.entidades.CategoriaProducto;
 import com.vainilla.entidades.Producto;
+import com.vainilla.entidades.ProductoAncheta;
 import com.vainilla.funciones.Funciones;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -21,7 +25,6 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     private Map<Integer, Integer> codigosCategoria = new HashMap<>();
 
     private DefaultComboBoxModel modeloComboCat = new DefaultComboBoxModel();
-   
 
     private Integer codProducto = null;
     Integer columnaSeleccionada;
@@ -67,10 +70,9 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         cargarDatosProducto("nombre_producto");
         cargarCategoria();
         formatoCajas();
+        anchetaPersonalizada();
 
     }
-
-  
 
     private void formatoCajas() {
         Funciones.formatoMondeaCajas(cajaPublicidad);
@@ -78,8 +80,6 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         Funciones.formatoMondeaCajas(cajaDomicilio);
         Funciones.formatoMondeaCajas(cajaUtilidad);
     }
-
-    
 
     private void cargarDatosProducto(String ordencito) {
         List<Producto> arrayProd;
@@ -377,6 +377,80 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         }
     }
 
+    private void anchetaPersonalizada() {
+        cmbAnchetas.setEnabled(false);
+    }
+
+    private void asignarValorDefaultSiEstaVacio(JTextField textField) {
+        // Verificar si el TextField está vacío y asignar 0 si es el caso
+        if (textField.getText().isEmpty()) {
+            textField.setText("0");
+        }
+    }
+
+    private boolean estaTodoBien() {
+        boolean bandera = true;
+
+        Object[][] campos = {
+            {cajaNombre.getText(), "Digite el nombre de la ancheta"},
+            {lblCantProductos.getText(), "Agregue productos a la canasta"},
+            {lblValorCanasta.getText(), "Agregue productos a la canasta"},
+            {cajaUtilidad.getText(), "Digite el valor de la utilidad"},};
+
+        for (Object[] campo : campos) {
+            if (campo[0] == null || campo[0].equals("") || campo[0].equals(0) || campo[0].equals("0")) {
+                bandera = false;
+                JOptionPane.showMessageDialog(panelCuerpo, campo[1], "Advertencia", JOptionPane.WARNING_MESSAGE);
+
+                // Si es un JTextField, coloca el foco en él
+                if (campo[0] instanceof JTextField jTextField) {
+                    jTextField.requestFocus();
+                }
+                return bandera;  // Terminar la validación si encuentra un campo vacío o con un valor no válido
+            }
+        }
+        return bandera;
+    }
+
+    private void borrarDatos() {
+        cajaNombre.setText("");
+        lblCantProductos.setText("0");
+        lblValorCanasta.setText("0");
+        cajaPublicidad.setText("");
+        cajaOtros.setText("");
+        cajaDomicilio.setText("");
+        lblSubtotal.setText("0");
+        cajaUtilidad.setText("");
+        lblTotal.setText("0");
+        cajaNombre.requestFocus();
+    }
+
+    public static void insertarDatosEnTablaDeRompimiento(Object[] rowData) {
+        // Aquí iría tu lógica para insertar los datos en la tabla de rompimiento
+        // Puedes utilizar la misma lógica que tenías en tu código original
+        // Por ejemplo:
+        String nombre = rowData[0].toString();
+        
+        System.out.println("nom: " + nombre);
+
+        DaoProducto dao = new DaoProducto();
+        List<Producto> arrayProduct = dao.buscarDato(nombre, "nombre_producto");
+
+        Producto codigoProducto = arrayProduct.get(0);
+        Integer cod = codigoProducto.getCodProducto();
+
+        System.out.println("cod: " + cod);
+        Integer cantProduct = (Integer) rowData[1];
+        Integer total = (Integer) rowData[2];
+        
+//        DaoAncheta
+        
+        
+//        ProductoAncheta objProdAncheta = new ProductoAncheta(codAncheta, codigoProducto, cantProduct, total);
+        // Resto de los datos...
+        // Realiza la inserción en la tabla de rompimiento...
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -436,6 +510,11 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         chkPersonalizado.setFont(new java.awt.Font("Fredoka", 0, 18)); // NOI18N
         chkPersonalizado.setText("Personalizada");
         chkPersonalizado.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(65, 46, 152), 3, true));
+        chkPersonalizado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkPersonalizadoActionPerformed(evt);
+            }
+        });
 
         cmbAnchetas.setBackground(new java.awt.Color(231, 231, 234));
         cmbAnchetas.setFont(new java.awt.Font("Fredoka", 0, 16)); // NOI18N
@@ -676,6 +755,11 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         btnCrear.setText("Crear");
         btnCrear.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(65, 46, 152), 3, true));
         btnCrear.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCrear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCrearActionPerformed(evt);
+            }
+        });
 
         btnBorrar.setFont(new java.awt.Font("Fredoka", 0, 14)); // NOI18N
         btnBorrar.setText("Borrar");
@@ -954,6 +1038,80 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     private void cajaUtilidadKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaUtilidadKeyReleased
         descripcionTotal();
     }//GEN-LAST:event_cajaUtilidadKeyReleased
+
+    private void chkPersonalizadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkPersonalizadoActionPerformed
+        if (chkPersonalizado.isSelected()) {
+            cmbAnchetas.setEnabled(true);
+        } else {
+            anchetaPersonalizada();
+        }
+    }//GEN-LAST:event_chkPersonalizadoActionPerformed
+
+    private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
+        if (estaTodoBien()) {
+
+            String nombre = cajaNombre.getText().toUpperCase();
+
+            asignarValorDefaultSiEstaVacio(cajaPublicidad);
+            asignarValorDefaultSiEstaVacio(cajaDomicilio);
+            asignarValorDefaultSiEstaVacio(cajaOtros);
+
+            Integer cantProduct = Integer.valueOf(Funciones.formatoNatural(lblCantProductos.getText()));
+            Integer valorCanasta = Integer.valueOf(Funciones.formatoNatural(lblValorCanasta.getText()));
+            Integer domicilio = Integer.valueOf(Funciones.formatoNatural(cajaDomicilio.getText()));
+            Integer otros = Integer.valueOf(Funciones.formatoNatural(cajaOtros.getText()));
+            Integer publicidad = Integer.valueOf(Funciones.formatoNatural(cajaPublicidad.getText()));
+            Integer subtotal = Integer.valueOf(Funciones.formatoNatural(lblSubtotal.getText()));
+            Integer utilidad = Integer.valueOf(Funciones.formatoNatural(cajaUtilidad.getText()));
+            Integer total = Integer.valueOf(Funciones.formatoNatural(lblTotal.getText()));
+
+            String tipo = "cliente";
+
+            if (!chkPersonalizado.isSelected()) {
+                tipo = "Nueva";
+            }
+
+            DaoAncheta daoAncheta = new DaoAncheta();
+            Ancheta objAncheta = new Ancheta(0, nombre, tipo, cantProduct, valorCanasta, publicidad, otros, domicilio, utilidad, total, subtotal);
+
+            DefaultTableModel modelCanasta = (DefaultTableModel) tablaCanasta.getModel();
+
+            // Obtener el número de filas y columnas en la tabla
+            int numRows = modelCanasta.getRowCount();
+            int numCols = modelCanasta.getColumnCount();
+
+            // Iterar sobre todas las filas
+            for (int row = 0; row < numRows; row++) {
+                // Crear un arreglo para almacenar los valores de cada fila
+                Object[] rowData = new Object[numCols];
+                // Iterar sobre todas las columnas de la fila actual
+                for (int col = 0; col < numCols; col++) {
+                    // Obtener el valor de la celda en la fila y columna actual
+                    rowData[col] = modelCanasta.getValueAt(row, col);
+                }
+                // Aquí tienes los valores de la fila actual en el arreglo rowData
+                // Ahora puedes procesar estos valores según tu lógica
+                // Por ejemplo, insertarlos en tu tabla de rompimiento
+                // Inserta los valores en tu tabla de rompimiento utilizando la lógica que ya tienes implementada
+                insertarDatosEnTablaDeRompimiento(rowData);
+            }
+
+//            if (!verificarNombre(nombre)) {
+//                System.out.println("existe: " + verificarNombre(nombre));
+//            if (daoAncheta.registrar(objAncheta)) {
+//                
+//
+//                JOptionPane.showMessageDialog(panelCuerpo, "Registro Exitoso", "Información", JOptionPane.INFORMATION_MESSAGE);
+//                borrarDatos();
+//
+//            } else {
+//                JOptionPane.showMessageDialog(panelCuerpo, "No se pudo registrar", "Error", JOptionPane.ERROR_MESSAGE);
+//            }
+//            } else {
+//                JOptionPane.showMessageDialog(panelCuerpo, "El proveedor ya ha sido registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
+//            }
+        }
+    }//GEN-LAST:event_btnCrearActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

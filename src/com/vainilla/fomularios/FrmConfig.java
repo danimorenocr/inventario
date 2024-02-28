@@ -1,7 +1,6 @@
 package com.vainilla.fomularios;
 
 import com.vainilla.configuracion.Credenciales;
-import java.awt.Color;
 import java.awt.Dialog;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;

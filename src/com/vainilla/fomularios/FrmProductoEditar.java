@@ -283,7 +283,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
     private void stockCargar() {
         try {
             Integer stock = Integer.valueOf(cajaStock.getText());
-            Integer precioFull = Integer.valueOf(cajaPrecioTotal.getText());
+            Integer precioFull = Integer.valueOf(Funciones.formatoNatural(cajaPrecioTotal.getText()));
             Integer precioXunidad = precioFull / stock;
             lblPrecioUnidad.setText(Funciones.formatoNumero(precioXunidad) + "");
             lblPrecioAcumulado.setText(Funciones.formatoNumero(precioXunidad) + "");
@@ -310,7 +310,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
 
         try {
             Integer numCajas = Integer.valueOf(cajaNumCajas.getText());
-            Integer precioTotalCaja = Integer.valueOf(cajaPrecioTotalCaja.getText());
+            Integer precioTotalCaja = Integer.valueOf(Funciones.formatoNatural(cajaPrecioTotalCaja.getText()));
             Integer precioUnitarioCajas = precioTotalCaja / numCajas;
             lblPrecioUnidPaquetes.setText(Funciones.formatoNumero(precioUnitarioCajas) + "");
 

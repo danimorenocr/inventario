@@ -29,16 +29,15 @@ import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 public class FrmProducto extends javax.swing.JInternalFrame {
-    
+
     private Map<Integer, Integer> losCodigosCat = new HashMap<>();
     private Map<Integer, Integer> losCodigosProv = new HashMap<>();
-    
+
     private DefaultComboBoxModel modeloComboCat = new DefaultComboBoxModel();
     private DefaultComboBoxModel modeloComboProv = new DefaultComboBoxModel();
     FrmPrincipal principal = new FrmPrincipal();
     JDesktopPane panelEscritorio = new JDesktopPane();
-    
-    
+
     public FrmProducto() {
         quitarHeader(this);
         initComponents();
@@ -50,18 +49,18 @@ public class FrmProducto extends javax.swing.JInternalFrame {
         cargarImg();
         formatoCajas();
     }
-    
+
     private void quitarHeader(JInternalFrame ventana) {
         BasicInternalFrameUI interUser = (BasicInternalFrameUI) ventana.getUI();
         interUser.setNorthPane(null);
     }
-    
+
     private void formatoCajas() {
         Funciones.formatoMondeaCajas(cajaPrecioTotal);
         Funciones.formatoMondeaCajas(cajaPrecioTotalCaja);
         Funciones.formatoMondeaCajas(cajaEnvio);
     }
-    
+
     private void cargarImg() {
         try {
             URL imgU = new URL("https://cdn-icons-png.flaticon.com/128/738/738884.png");
@@ -69,67 +68,67 @@ public class FrmProducto extends javax.swing.JInternalFrame {
             ImageIcon iconoBox = new ImageIcon(boxesImg);
             lblErrorImg.setIcon(iconoBox);
             lblErrorImg.setVisible(false);
-            
+
         } catch (MalformedURLException ex) {
             Logger.getLogger(FrmPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void cargarCategoria(String orden) {
         modeloComboCat.removeAllElements();
         List<CategoriaProducto> arrayCat;
         Integer indice = 0;
-        
+
         DaoCategoriaProducto dao = new DaoCategoriaProducto();
         arrayCat = dao.consultar(orden);
         losCodigosCat.put(0, 0);
         modeloComboCat.addElement("SELECCIONE LA CATEGORIA");
-        
+
         for (CategoriaProducto categoria : arrayCat) {
             indice++;
-            
+
             losCodigosCat.put(indice, categoria.getCodCategoria());
             modeloComboCat.addElement(categoria.getNombreCategoria());
         }
-        
+
     }
-    
+
     private void cargarProveedor() {
         List<Proveedor> arrayProv;
         Integer indice = 0;
-        
+
         DaoProveedor dao = new DaoProveedor();
         arrayProv = dao.consultar("nombre_proveedor");
-        
+
         losCodigosProv.put(0, 0);
         modeloComboProv.addElement("SELECCIONE EL PROVEEDOR");
-        
+
         for (Proveedor proveedor : arrayProv) {
             indice++;
-            
+
             losCodigosProv.put(indice, proveedor.getCodProveedor());
             modeloComboProv.addElement(proveedor.getNombreProveedor());
         }
-        
+
     }
-    
+
     private boolean verificarNombre(String nombre) {
         boolean existencia = true;
-        
+
         List<Producto> arrayProd;
         DaoProducto dao = new DaoProducto();
         arrayProd = dao.buscarDato(nombre, "nombre_producto");
-        
+
         System.out.println("datos: " + arrayProd);
-        
+
         if (arrayProd.isEmpty()) {
             existencia = false;
         }
-        
+
         System.out.println("existencia: " + existencia);
         return existencia;
     }
-    
+
     private void borrarDatos() {
         cmbCat.setSelectedIndex(0);
         cmbProveedor.setSelectedIndex(0);
@@ -157,9 +156,9 @@ public class FrmProducto extends javax.swing.JInternalFrame {
         lblTamEnvio.setText("-");
         cajaDisabled();
     }
-    
+
     private void borrarCostos() {
-        
+
         cajaEnvio.setText("");
         cajaStock.setText("");
         cajaNumCajas.setText("");
@@ -177,7 +176,7 @@ public class FrmProducto extends javax.swing.JInternalFrame {
         lblPrecioDeUnidad.setText("-");
         lblPrecioUnidad.setText("-");
     }
-    
+
     private boolean estaTodoBien() {
         boolean bandera = true;
         boolean seleccionado = chBoxCaja.isSelected();
@@ -189,7 +188,7 @@ public class FrmProducto extends javax.swing.JInternalFrame {
             {cajaNombre.getText(), "Digite el nombre del producto"},
             {fCompra.getDate(), "Seleccione una fecha de compra"},
             {fVencimiento.getDate(), "Seleccione una fecha de vencimiento"},};
-        
+
         for (Object[] campo : campos) {
             if (campo[0] == null || campo[0].equals("") || campo[0].equals(0) || campo[0].equals("-")) {
                 bandera = false;
@@ -202,7 +201,7 @@ public class FrmProducto extends javax.swing.JInternalFrame {
                 return bandera;  // Terminar la validación si encuentra un campo vacío o con un valor no válido
             }
         }
-        
+
         if (!seleccionado) {
             Object[][] camposNoCheck = {
                 {cajaStock.getText(), "Ingrese la cantidad de stock"},
@@ -210,12 +209,12 @@ public class FrmProducto extends javax.swing.JInternalFrame {
                 {lblPrecioMetro.getText(), "Ingrese el Precio del Metro"},
                 {lblPrecioUnidad.getText(), "Revise el stock"}
             };
-            
+
             for (Object[] campo : camposNoCheck) {
                 if (campo[0] == null || campo[0].equals("") || campo[0].equals("-")) {
                     bandera = false;
                     JOptionPane.showMessageDialog(panelCuerpo, campo[1], "Advertencia", JOptionPane.WARNING_MESSAGE);
-                    
+
                     if (campo[0] instanceof JTextField jTextField) {
                         jTextField.requestFocus();
                     }
@@ -230,12 +229,12 @@ public class FrmProducto extends javax.swing.JInternalFrame {
                 {lblPrecioUnidPaquetes.getText(), "Mensaje correspondiente para lblPrecioUnidPaquetes"},
                 {lblTotalUnidades.getText(), "Mensaje correspondiente para lblTotalUnidades"},
                 {lblPrecioDeUnidad.getText(), "Mensaje correspondiente para lblPrecioDeUnidad"},};
-            
+
             for (Object[] campo : camposCheck) {
                 if (campo[0] == null || campo[0].equals("") || campo[0].equals(0) || campo[0].equals("-")) {
                     bandera = false;
                     JOptionPane.showMessageDialog(panelCuerpo, campo[1], "Advertencia", JOptionPane.WARNING_MESSAGE);
-                    
+
                     if (campo[0] instanceof JTextField jTextField) {
                         jTextField.requestFocus();
                     }
@@ -243,7 +242,7 @@ public class FrmProducto extends javax.swing.JInternalFrame {
                 }
             }
         }
-        
+
         Object[][] camposEnvio = {
             {cajaEnvio.getText(), "Ingrese el costo del envío"},
             {cajaTotalProductosEnvio.getText(), "Ingrese las unidades adquiridas en el envío"},
@@ -251,58 +250,58 @@ public class FrmProducto extends javax.swing.JInternalFrame {
             {lblCostoEnvioUnidad.getText(), "Mensaje correspondiente para lblCostoEnvioUnidad"},
             {lblPrecioConEnvioUnidad.getText(), "Mensaje correspondiente para lblPrecioConEnvioUnidad"},
             {lblPrecioFinal.getText(), "Mensaje correspondiente para lblPrecioFinal"},};
-        
+
         for (Object[] campo : camposEnvio) {
-            if (campo[0] == null || campo[0].equals("") || campo[0].equals("0") || campo[0].equals("-")) {
+            if (campo[0] == null || campo[0].equals("") || campo[0].equals("-")) {
                 bandera = false;
                 JOptionPane.showMessageDialog(panelCuerpo, campo[1], "Advertencia", JOptionPane.WARNING_MESSAGE);
-                
+
                 if (campo[0] instanceof JTextField jTextField) {
                     jTextField.requestFocus();
                 }
                 return bandera;
             }
         }
-        
+
         return bandera;
     }
-    
+
     private void stockDisabled() {
         cajaStock.setEnabled(false);
         cajaTamanno.setEnabled(false);
         cajaPrecioTotal.setEnabled(false);
         panelStock.setBackground(Color.WHITE);
-        
+
         panelCaja.setBackground(new Color(255, 251, 227));
         cajaNumCajas.setEnabled(true);
         cajaPrecioTotalCaja.setEnabled(true);
         cajaUnidCajas.setEnabled(true);
     }
-    
+
     private void cajaDisabled() {
         cajaNumCajas.setEnabled(false);
         cajaPrecioTotalCaja.setEnabled(false);
         cajaUnidCajas.setEnabled(false);
         panelCaja.setBackground(Color.WHITE);
-        
+
         panelStock.setBackground(new Color(255, 251, 227));
         cajaStock.setEnabled(true);
         cajaTamanno.setEnabled(true);
         cajaPrecioTotal.setEnabled(true);
-        
+
     }
-    
+
     private void stockCargar() {
         try {
             Integer stock = Integer.valueOf(cajaStock.getText());
             Integer precioFull = Integer.valueOf(Funciones.formatoNatural(cajaPrecioTotal.getText()));
             Integer precioXunidad = precioFull / stock;
-            
+
             lblPrecioUnidad.setText(Funciones.formatoNumero(precioXunidad) + "");
             lblPrecioAcumulado.setText(Funciones.formatoNumero(precioXunidad) + "");
-            
+
             String tama = cajaTamanno.getText();
-            
+
             if (tama.equals("") || tama.equals("0")) {
                 cajaTamanno.setText("");
                 lblPrecioMetro.setText("0");
@@ -310,29 +309,29 @@ public class FrmProducto extends javax.swing.JInternalFrame {
             } else {
                 Integer tam = Integer.valueOf(cajaTamanno.getText());
                 Integer precioMetro = precioXunidad / tam;
-                
+
                 lblPrecioMetro.setText(Funciones.formatoNumero(precioMetro) + "");
-                
+
             }
             cargarCostos();
         } catch (NumberFormatException e) {
 //            JOptionPane.showMessageDialog(panelCuerpo, "Ingresa datos validos", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
+
     }
-    
+
     private void paqueteCargar() {
-        
+
         try {
             Integer numCajas = Integer.valueOf(cajaNumCajas.getText());
             Integer precioTotalCaja = Integer.valueOf(Funciones.formatoNatural(cajaPrecioTotalCaja.getText()));
             Integer precioUnitarioCajas = precioTotalCaja / numCajas;
             lblPrecioUnidPaquetes.setText(Funciones.formatoNumero(precioUnitarioCajas) + "");
-            
+
             Integer unidades = Integer.valueOf(cajaUnidCajas.getText());
             Integer totalUnidad = unidades * numCajas;
             lblTotalUnidades.setText(totalUnidad + "");
-            
+
             Integer costoUnidad = precioUnitarioCajas / unidades;
             lblPrecioDeUnidad.setText(Funciones.formatoNumero(costoUnidad) + "");
             Integer precioUnidad = Integer.valueOf(Funciones.formatoNatural(lblPrecioDeUnidad.getText()));
@@ -342,15 +341,15 @@ public class FrmProducto extends javax.swing.JInternalFrame {
 //             JOptionPane.showMessageDialog(panelCuerpo, "Ingresa datos validos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     private void cargarCostos() {
         try {
-            
+
             Integer envio = Integer.valueOf(Funciones.formatoNatural(cajaEnvio.getText()));
             Integer unidadesCompradas = Integer.valueOf(cajaTotalProductosEnvio.getText());
             Integer costoEnvioUnidadCaja = envio / unidadesCompradas;
             lblCostoEnvioUnidad.setText(Funciones.formatoNumero(costoEnvioUnidadCaja) + "");
-            
+
             if (chBoxCaja.isSelected()) {
 
                 //COSTOS CAJA
@@ -366,22 +365,22 @@ public class FrmProducto extends javax.swing.JInternalFrame {
                     lblPrecioConEnvioUnidad.setForeground(new Color(47, 186, 75));
                     lblErrorImg.setVisible(false);
                 }
-                
+
                 Integer precioUnidad = Integer.valueOf(Funciones.formatoNatural(lblPrecioDeUnidad.getText()));
                 Integer precioConEnvioUnidad = precioUnidad + costoEnvioUnidadCaja;
-                
+
                 lblPrecioConEnvioUnidad.setText(Funciones.formatoNumero(precioConEnvioUnidad));
-                
+
                 Integer precioFinal = totalUnid * precioConEnvioUnidad;
                 lblPrecioFinal.setText(Funciones.formatoNumero(precioFinal));
-                
+
             } else {
                 //COSTOS STOCK
                 Integer precioUnidad = Integer.valueOf(Funciones.formatoNatural(lblPrecioAcumulado.getText()));
 
                 //EL NUM DE UNIDADES INGRESADAS DEBE SER >= A LAS ENVIADAS
                 Integer stock = Integer.valueOf(cajaStock.getText());
-                
+
                 if (unidadesCompradas < stock) {
                     lblCostoEnvioUnidad.setForeground(Color.red);
                     lblPrecioConEnvioUnidad.setForeground(Color.red);
@@ -394,40 +393,40 @@ public class FrmProducto extends javax.swing.JInternalFrame {
                 System.out.println("llegue");
                 Integer precioConEnvioUnidad = precioUnidad + costoEnvioUnidadCaja;
                 lblPrecioConEnvioUnidad.setText(Funciones.formatoNumero(precioConEnvioUnidad) + "");
-                
+
                 Integer precioFinal = stock * precioConEnvioUnidad;
                 lblPrecioFinal.setText(Funciones.formatoNumero(precioFinal) + "");
-                
+
                 Integer precioMetr = Integer.valueOf(Funciones.formatoNatural(lblPrecioMetro.getText()));
                 if (precioMetr != 0) {
-                    
+
                     Integer precioMetroEnvio = costoEnvioUnidadCaja + precioMetr;
                     lblTamEnvio.setText(Funciones.formatoNumero(precioMetroEnvio) + "");
                 }
-                
+
             }
         } catch (NumberFormatException e) {
 //             JOptionPane.showMessageDialog(panelCuerpo, "Ingresa datos validos", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
+
     }
-    
+
     private void asignarValorDefaultSiEstaVacio(JTextField textField) {
         // Verificar si el TextField está vacío y asignar 0 si es el caso
         if (textField.getText().isEmpty()) {
             textField.setText("0");
         }
     }
-    
+
     private void asignarValorDefaultSiEstaVacioLabel(JLabel label) {
         // Verificar si el TextField está vacío y asignar 0 si es el caso
 
         if (label.getText().equals("-")) {
             label.setText("0");
         }
-        
+
     }
-    
+
     private void mostrarInternalFrame() {
         this.setVisible(false);
         FrmProveedor prov = new FrmProveedor();
@@ -436,7 +435,7 @@ public class FrmProducto extends javax.swing.JInternalFrame {
         quitarHeader(prov);
         prov.setVisible(true);
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -1225,14 +1224,14 @@ public class FrmProducto extends javax.swing.JInternalFrame {
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         if (estaTodoBien()) {
-            
+
             Integer indiceCat = cmbCat.getSelectedIndex();
             Integer indiceProv = cmbProveedor.getSelectedIndex();
-            
+
             String nombre = cajaNombre.getText().toUpperCase();
             Date fechaCompra = fCompra.getDate();
             Date fechaVencimiento = fVencimiento.getDate();
-            
+
             asignarValorDefaultSiEstaVacio(cajaNumCajas);
             asignarValorDefaultSiEstaVacio(cajaUnidCajas);
             asignarValorDefaultSiEstaVacio(cajaTamanno);
@@ -1242,7 +1241,7 @@ public class FrmProducto extends javax.swing.JInternalFrame {
             asignarValorDefaultSiEstaVacioLabel(lblPrecioUnidPaquetes);
             asignarValorDefaultSiEstaVacioLabel(lblPrecioDeUnidad);
             asignarValorDefaultSiEstaVacioLabel(lblTamEnvio);
-            
+
             Integer numCajas = Integer.valueOf(cajaNumCajas.getText());
             Integer undCaja = Integer.valueOf(cajaUnidCajas.getText());
             Integer precioCaja = Integer.valueOf(Funciones.formatoNatural(lblPrecioUnidPaquetes.getText()));
@@ -1250,12 +1249,12 @@ public class FrmProducto extends javax.swing.JInternalFrame {
             Integer envio = Integer.valueOf(Funciones.formatoNatural(cajaEnvio.getText()));
             Integer udAdquiridasEnvio = Integer.valueOf(cajaTotalProductosEnvio.getText());
             Double tamanno = Double.valueOf(cajaTamanno.getText());
-            
+
             Integer precioMetro = Integer.valueOf(Funciones.formatoNatural(lblPrecioMetro.getText()));
             Integer precioConEnvio = Integer.valueOf(Funciones.formatoNatural(lblPrecioConEnvioUnidad.getText()));
-            
+
             Integer stock, precioUnid, precioTotalCompra;
-            
+
             if (chBoxCaja.isSelected()) {
                 stock = Integer.valueOf(lblTotalUnidades.getText());
                 precioUnid = Integer.valueOf(Funciones.formatoNatural(lblPrecioDeUnidad.getText()));
@@ -1265,33 +1264,33 @@ public class FrmProducto extends javax.swing.JInternalFrame {
                 stock = Integer.valueOf(cajaStock.getText());
                 precioUnid = Integer.valueOf(Funciones.formatoNatural(lblPrecioUnidad.getText()));
                 precioTotalCompra = Integer.valueOf(Funciones.formatoNatural(cajaPrecioTotal.getText()));
-                
+
             }
-            
+
             Integer codSeleccionadoProv = losCodigosProv.get(indiceProv);
             Integer codSeleccionadoCat = losCodigosCat.get(indiceCat);
-            
+
             Proveedor objProveedor = new Proveedor(codSeleccionadoProv, "", "", "", 0);
             CategoriaProducto objCategorias = new CategoriaProducto(codSeleccionadoCat, "", 0);
-            
+
             DaoProducto daoProducto = new DaoProducto();
             Producto objProducto = new Producto(0, nombre, numCajas, undCaja, precioCaja, precioUnid, precioTotalCompra, envio, precioFinal, fechaCompra, fechaVencimiento,
                     stock, tamanno, precioMetro, precioConEnvio, objCategorias, objProveedor, udAdquiridasEnvio);
-            
+
             if (!verificarNombre(nombre)) {
                 System.out.println("existe: " + verificarNombre(nombre));
-                
+
                 if (daoProducto.registrar(objProducto)) {
                     JOptionPane.showMessageDialog(panelCuerpo, "Registro Exitoso", "Información", JOptionPane.INFORMATION_MESSAGE);
-                    borrarDatos();
-                    
+//                    borrarDatos();
+
                 } else {
                     JOptionPane.showMessageDialog(panelCuerpo, "No se pudo registrar", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(panelCuerpo, "El proveedor ya ha sido registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(panelCuerpo, "El producto ya ha sido registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
             }
-            
+
         }
     }//GEN-LAST:event_btnAgregarActionPerformed
 
@@ -1302,13 +1301,13 @@ public class FrmProducto extends javax.swing.JInternalFrame {
     private void btnCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoriaActionPerformed
         FrmCategoriaProducto windowCat = new FrmCategoriaProducto(null, true);
         windowCat.setVisible(true);
-        
+
         windowCat.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
                 cargarCategoria("cod_categoria");
             }
-            
+
         });
     }//GEN-LAST:event_btnCategoriaActionPerformed
 

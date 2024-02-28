@@ -6,27 +6,29 @@ public class Ancheta {
     private String nombreAncheta;
     private String tipoAncheta;
     private Integer cantProductos;
-    private Integer precioParcial;
+    private Integer valorCanasta;
     private Integer precioPublicidad;
     private Integer valorAdicional;
     private Integer precioDomicilio;
     private Integer utilidad;
     private Integer precioFinal;
+    private Integer subTotal;
 
     public Ancheta() {
     }
 
-    public Ancheta(Integer codAncheta, String nombreAncheta, String tipoAncheta, Integer cantProductos, Integer precioParcial, Integer precioPublicidad, Integer valorAdicional, Integer precioDomicilio, Integer utilidad, Integer precioFinal) {
+    public Ancheta(Integer codAncheta, String nombreAncheta, String tipoAncheta, Integer cantProductos, Integer valorCanasta, Integer precioPublicidad, Integer valorAdicional, Integer precioDomicilio, Integer utilidad, Integer precioFinal, Integer subTotal) {
         this.codAncheta = codAncheta;
         this.nombreAncheta = nombreAncheta;
         this.tipoAncheta = tipoAncheta;
         this.cantProductos = cantProductos;
-        this.precioParcial = precioParcial;
+        this.valorCanasta = valorCanasta;
         this.precioPublicidad = precioPublicidad;
         this.valorAdicional = valorAdicional;
         this.precioDomicilio = precioDomicilio;
         this.utilidad = utilidad;
         this.precioFinal = precioFinal;
+        this.subTotal = subTotal;
     }
 
     public Integer getCodAncheta() {
@@ -61,12 +63,12 @@ public class Ancheta {
         this.cantProductos = cantProductos;
     }
 
-    public Integer getPrecioParcial() {
-        return precioParcial;
+    public Integer getValorCanasta() {
+        return valorCanasta;
     }
 
-    public void setPrecioParcial(Integer precioParcial) {
-        this.precioParcial = precioParcial;
+    public void setValorCanasta(Integer valorCanasta) {
+        this.valorCanasta = valorCanasta;
     }
 
     public Integer getPrecioPublicidad() {
@@ -109,9 +111,17 @@ public class Ancheta {
         this.precioFinal = precioFinal;
     }
 
+    public Integer getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(Integer subTotal) {
+        this.subTotal = subTotal;
+    }
+
     @Override
     public String toString() {
-        return "Ancheta{" + "codAncheta=" + codAncheta + ", nombreAncheta=" + nombreAncheta + ", tipoAncheta=" + tipoAncheta + ", cantProductos=" + cantProductos + ", precioParcial=" + precioParcial + ", precioPublicidad=" + precioPublicidad + ", valorAdicional=" + valorAdicional + ", precioDomicilio=" + precioDomicilio + ", utilidad=" + utilidad + ", precioFinal=" + precioFinal + '}';
+        return "Ancheta{" + "codAncheta=" + codAncheta + ", nombreAncheta=" + nombreAncheta + ", tipoAncheta=" + tipoAncheta + ", cantProductos=" + cantProductos + ", valorCanasta=" + valorCanasta + ", precioPublicidad=" + precioPublicidad + ", valorAdicional=" + valorAdicional + ", precioDomicilio=" + precioDomicilio + ", utilidad=" + utilidad + ", precioFinal=" + precioFinal + ", subTotal=" + subTotal + '}';
     }
 
 }

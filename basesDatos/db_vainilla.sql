@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-02-2024 a las 21:14:02
+-- Tiempo de generación: 25-02-2024 a las 02:48:45
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.0.28
 
@@ -16,7 +16,8 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
-
+DROP DATABASE if exists db_vainilla;
+create DATABASE db_vainilla;
 --
 -- Base de datos: `db_vainilla`
 --
@@ -27,15 +28,19 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `anchetas`
 --
 
+use db_vainilla;
+
+
 CREATE TABLE `anchetas` (
   `cod_ancheta` int(11) NOT NULL,
   `nombre_ancheta` varchar(100) NOT NULL,
   `tipo_ancheta` varchar(10) NOT NULL,
   `cant_productos` int(11) NOT NULL,
-  `precio_parcial` int(11) NOT NULL,
+  `valor_canasta` int(11) NOT NULL,
   `utilidad` int(11) NOT NULL,
-  `precio_domicilio` int(11) DEFAULT NULL,
-  `valor_adicional` int(11) DEFAULT NULL,
+  `domicilio` int(11) DEFAULT NULL,
+  `subtotal` int(11) NOT NULL,
+  `otros` int(11) DEFAULT NULL,
   `precio_final` int(11) NOT NULL,
   `publicidad` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -66,7 +71,8 @@ INSERT INTO `categoria_productos` (`cod_categoria`, `nombre_categoria`) VALUES
 (8, 'POCILLOS '),
 (9, 'GLOBOS '),
 (10, 'INSUMOS'),
-(11, 'DECORACION');
+(11, 'DECORACION'),
+(12, 'BASE ICOPOR ');
 
 -- --------------------------------------------------------
 
@@ -161,20 +167,20 @@ INSERT INTO `productos` (`cod_producto`, `nombre_producto`, `num_cajas`, `num_un
 (26, 'CILINDRO CORBATA, CERVEZA', 0, 0, 0, 17200, 34400, 1500, 35900, '2023-02-04', '2023-02-04', 2, 38.00, 452, 17950, 2, 3, 2),
 (27, 'UP', 0, 0, 0, 22000, 22000, 500, 22500, '2023-02-04', '2023-02-04', 1, 33.00, 666, 22500, 2, 3, 1),
 (28, 'PRINGLES PEQUEÑA', 0, 0, 0, 6000, 6000, 0, 6000, '2024-02-06', '2024-02-06', 1, 0.00, 0, 6000, 2, 5, 1),
-(29, '77', 1, 13, 14027, 1079, 14027, 1625, 15652, '2024-02-06', '2023-12-20', 13, 0.00, 0, 1204, 5, 5, 13),
-(30, 'HERSHEYS', 0, 0, 0, 3600, 28800, 1000, 29112, '2024-02-04', '2023-10-31', 8, 0.00, 0, 3639, 2, 5, 8),
+(29, '77', 1, 13, 14027, 1079, 14027, 1625, 15652, '2024-02-06', '2023-12-20', 13, 0.00, 0, 1204, 2, 5, 13),
+(30, 'HERSHEYS ', 0, 0, 0, 3600, 32400, 1125, 33525, '2024-02-04', '2023-10-31', 9, 0.00, 0, 3725, 5, 5, 9),
 (31, 'COOL STAR', 0, 0, 0, 995, 3980, 250, 4228, '2024-02-05', '2023-11-22', 4, 0.00, 0, 1057, 5, 5, 4),
 (32, 'DULCES ALOKADOS', 1, 100, 6800, 68, 6800, 0, 6800, '2024-02-04', '2025-06-21', 100, 0.00, 0, 68, 4, 5, 100),
 (33, 'CAMISAS ', 0, 0, 0, 5070, 15210, 0, 15210, '2024-02-04', '2024-02-04', 3, 0.00, 0, 5070, 6, 5, 3),
-(34, 'BIGOTES ', 0, 0, 0, 5070, 5070, 0, 5070, '2024-02-04', '2024-02-04', 1, 0.00, 0, 5070, 6, 5, 1),
+(34, 'BIGOTES ', 0, 0, 0, 5070, 10140, 0, 10140, '2024-02-04', '2024-02-04', 2, 0.00, 0, 5070, 5, 5, 2),
 (35, 'GOMITAS TROLLI', 0, 0, 0, 954, 4770, 625, 5395, '2024-02-04', '2024-07-08', 5, 0.00, 0, 1079, 2, 5, 5),
-(36, ' GOMITAS TRULULU FRESITA', 0, 0, 0, 2350, 9400, 0, 9400, '2024-02-04', '2024-05-01', 4, 0.00, 0, 2350, 5, 8, 4),
+(36, 'GOMITAS TRULULU FRESITA ', 0, 0, 0, 2350, 9400, 0, 9400, '2024-02-04', '2024-05-01', 4, 0.00, 0, 2350, 5, 5, 4),
 (37, 'MONT BLANC', 0, 0, 0, 6130, 6130, 0, 6130, '2024-02-04', '2024-07-07', 1, 0.00, 0, 6130, 8, 5, 1),
 (38, 'GOMITAS GRISSLY', 0, 0, 0, 2200, 2200, 0, 2200, '2024-02-04', '2024-01-01', 1, 0.00, 0, 2200, 8, 5, 1),
 (39, 'BIGBEN', 0, 0, 0, 123, 2091, 0, 2091, '2024-02-03', '2024-02-10', 17, 0.00, 0, 123, 2, 5, 17),
 (40, 'CORAZÓN CHERIR', 0, 0, 0, 7000, 7000, 0, 7000, '2024-02-03', '2024-02-03', 1, 0.00, 0, 7000, 8, 5, 1),
 (41, 'MASMELOS ', 0, 0, 0, 500, 4000, 0, 4000, '2024-02-10', '2024-02-10', 8, 0.00, 0, 500, 8, 5, 8),
-(42, 'FLIPS ', 0, 0, 0, 1241, 2482, 125, 2606, '2024-02-03', '2023-11-04', 2, 0.00, 0, 1303, 2, 5, 2),
+(42, 'FLIPS', 0, 0, 0, 1241, 2482, 250, 2732, '2024-02-03', '2023-11-04', 2, 0.00, 0, 1366, 5, 5, 2),
 (43, 'WAFER JET', 0, 0, 0, 770, 1540, 0, 1540, '2024-02-02', '2024-02-13', 2, 0.00, 0, 770, 2, 5, 2),
 (44, 'GALLETAS TOSH FUSION', 0, 0, 0, 655, 1965, 375, 2340, '2024-02-03', '2023-11-03', 3, 0.00, 0, 780, 2, 5, 3),
 (45, 'GALLETAS TOSH AJONJOLI', 0, 0, 0, 655, 655, 125, 780, '2024-02-10', '2023-08-30', 1, 0.00, 0, 780, 2, 5, 1),
@@ -185,8 +191,8 @@ INSERT INTO `productos` (`cod_producto`, `nombre_producto`, `num_cajas`, `num_un
 (50, 'BARRAS GRANOLA TOSH ', 0, 0, 0, 1075, 3225, 0, 3225, '2024-02-03', '2024-02-11', 3, 0.00, 0, 1075, 2, 5, 3),
 (51, 'NUCITA ', 0, 0, 0, 466, 4194, 1250, 5910, '2024-02-03', '2023-12-30', 9, 0.00, 0, 591, 2, 5, 10),
 (52, 'FRITOLAY MANI ', 0, 0, 0, 2000, 8000, 0, 8000, '2024-02-03', '2024-05-07', 4, 0.00, 0, 2000, 2, 5, 4),
-(53, 'CHOCOLATINA JET PEQUEÑA ', 1, 50, 24200, 484, 24200, 6250, 30450, '2024-02-10', '2024-02-01', 50, 0.00, 0, 609, 2, 5, 50),
-(54, 'BURBU JET ', 0, 0, 0, 2456, 19654, 1000, 20648, '2024-02-03', '2023-11-24', 8, 0.00, 0, 2581, 2, 5, 8),
+(53, 'CHOCOLATINA JET PEQUEÑA ', 1, 50, 24200, 484, 24200, 6250, 30450, '2024-02-10', '2024-02-01', 50, 0.00, 0, 609, 5, 5, 50),
+(54, 'BURBU JET', 0, 0, 0, 2456, 17192, 1000, 18067, '2024-02-03', '2023-11-24', 7, 0.00, 0, 2581, 5, 5, 8),
 (55, 'CHOCOMELOS ', 0, 0, 0, 1490, 8940, 750, 9690, '2024-02-03', '2024-01-01', 6, 0.00, 0, 1615, 2, 5, 6),
 (56, 'MINI KINDER ', 0, 0, 0, 1000, 6000, 0, 6000, '2024-02-03', '2024-01-09', 6, 0.00, 0, 1000, 8, 5, 6),
 (57, 'PIAZAS', 1, 18, 5688, 316, 5688, 2250, 7938, '2024-02-03', '2024-10-19', 18, 0.00, 0, 441, 2, 5, 18),
@@ -221,7 +227,12 @@ INSERT INTO `productos` (`cod_producto`, `nombre_producto`, `num_cajas`, `num_un
 (86, 'ROSETONES ROSADOS', 0, 0, 0, 1700, 17000, 2120, 19120, '2024-02-05', '2024-02-05', 10, 0.00, 0, 1912, 2, 11, 10),
 (87, 'ROSA CARULINA ROSADA', 2, 11, 10900, 990, 21800, 5088, 26444, '2024-02-05', '2024-02-05', 22, 0.00, 0, 1202, 2, 11, 24),
 (88, 'ROSA CARTULINA LILA', 2, 12, 10900, 908, 21800, 5088, 26880, '2024-02-05', '2024-02-05', 24, 0.00, 0, 1120, 2, 11, 24),
-(89, 'FLOR CARTULINA', 5, 3, 5600, 1866, 28000, 3180, 31170, '2024-02-05', '2024-02-05', 15, 0.00, 0, 2078, 11, 11, 15);
+(89, 'FLOR CARTULINA', 5, 3, 5600, 1866, 28000, 3180, 31170, '2024-02-05', '2024-02-05', 15, 0.00, 0, 2078, 11, 11, 15),
+(90, 'FERRERO SUELTO', 0, 0, 0, 1566, 6266, 0, 6264, '2024-02-13', '2024-02-13', 4, 1.00, 1566, 1566, 2, 5, 4),
+(91, 'PONQUE PERSONAL ', 2, 12, 2000, 166, 4000, 0, 3984, '2024-02-03', '2024-02-03', 24, 0.00, 0, 166, 12, 12, 24),
+(92, 'EJEM2', 2, 21, 550, 26, 11000, 12000, 2268, '2024-02-15', '2024-02-16', 42, 0.00, 0, 54, 10, 4, 42),
+(93, 'EJEM3', 0, 0, 0, 12000, 12000, 2000, 14000, '2024-02-16', '2024-02-16', 1, 0.00, 0, 14000, 10, 4, 1),
+(94, 'JUMBO MINI BROWNIE', 1, 7, 8000, 1142, 8000, 1, 7994, '2024-02-15', '2024-09-18', 7, 0.00, 0, 1142, 13, 5, 7);
 
 -- --------------------------------------------------------
 
@@ -264,7 +275,9 @@ INSERT INTO `proveedores` (`cod_proveedor`, `nombre_proveedor`, `ciudad`, `telef
 (8, 'TUNJA ', 'TUNJA ', '1010101010'),
 (9, 'SORCKERITOS', 'BOGOTA', '3143692801'),
 (10, 'AMORE', 'BOGOTA', '3005799389'),
-(11, 'DECORARTE', 'CALI', '0000000000');
+(11, 'DECORARTE', 'CALI', '0000000000'),
+(12, 'LA 11', 'TUNJA ', '1010101010'),
+(13, 'LA 11', 'TUNJA ', '1010101010');
 
 -- --------------------------------------------------------
 
@@ -343,19 +356,19 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `categoria_productos`
 --
 ALTER TABLE `categoria_productos`
-  MODIFY `cod_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `cod_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `cod_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
+  MODIFY `cod_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  MODIFY `cod_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `cod_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
@@ -363,6 +376,9 @@ ALTER TABLE `proveedores`
 ALTER TABLE `usuarios`
   MODIFY `cod_usuario` int(11) NOT NULL AUTO_INCREMENT;
 
+
+ALTER TABLE `anchetas`
+  MODIFY `cod_ancheta` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- Restricciones para tablas volcadas
 --

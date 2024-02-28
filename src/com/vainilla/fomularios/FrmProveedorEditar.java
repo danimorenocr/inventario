@@ -10,7 +10,6 @@ import javax.swing.JOptionPane;
 public class FrmProveedorEditar extends javax.swing.JDialog {
 
     private final Proveedor objActualizar;
- 
 
     public FrmProveedorEditar(java.awt.Frame parent, boolean modal, Proveedor objExterno) {
         super(parent, modal);
@@ -65,12 +64,18 @@ public class FrmProveedorEditar extends javax.swing.JDialog {
     private boolean verificarNombre(String nombre) {
         boolean existencia = true;
         List<Proveedor> arrayProv;
+        int codigoExistente = objActualizar.getCodProveedor();
         DaoProveedor dao = new DaoProveedor();
-        arrayProv = dao.buscarDato(nombre, "nombre");
+        arrayProv = dao.buscarDato(nombre, "nombre_proveedor");
         System.out.println("nombres: " + arrayProv);
         if (arrayProv.isEmpty()) {
-            System.out.println("tamaño: " + arrayProv.size());
-            existencia = false;
+             existencia = false;
+        } else {
+            Proveedor prov = arrayProv.get(0);
+            if (codigoExistente == prov.getCodProveedor()) {
+                existencia = false;
+            }
+           
         }
 
         System.out.println("tamaño: " + arrayProv.size());

@@ -1,34 +1,26 @@
 package com.vainilla.daos;
 
 import com.vainilla.configuracion.Conexion;
-import com.vainilla.entidades.Ancheta;
+import com.vainilla.entidades.ProductoAncheta;
 import com.vainilla.interfaces.Funcionalidad;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DaoAncheta extends Conexion implements Funcionalidad<Ancheta> {
+public class DaoProductoAncheta extends Conexion implements Funcionalidad<ProductoAncheta> {
 
     @Override
-    public boolean registrar(Ancheta elObjeto) {
+    public boolean registrar(ProductoAncheta elObjeto) {
         try {
-            cadenaSql = "INSERT INTO anchetas (nombre_ancheta, tipo_ancheta, cant_productos, valor_canasta, "
-                    + "utilidad, domicilio, subtotal, otros, precio_final, publicidad) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            cadenaSql = "INSERT INTO productos_anchetas (cod_producto, cod_ancheta, cantidad_productos,precio_total_producto) VALUES (?, ?, ?,?)";
 
             consulta = objConexion.prepareStatement(cadenaSql);
 
-            consulta.setString(1, elObjeto.getNombreAncheta());
-            consulta.setString(2, elObjeto.getTipoAncheta());
+            consulta.setInt(1, elObjeto.getCodProducto().getCodProducto());
+            consulta.setInt(2, elObjeto.getCodAncheta().getCodAncheta());
             consulta.setInt(3, elObjeto.getCantProductos());
-            consulta.setInt(4, elObjeto.getValorCanasta());
-            consulta.setInt(5, elObjeto.getUtilidad());
-            consulta.setInt(6, elObjeto.getPrecioDomicilio());
-            consulta.setInt(7, elObjeto.getSubTotal());
-            consulta.setInt(8, elObjeto.getValorAdicional());
-            consulta.setInt(9, elObjeto.getPrecioFinal());
-            consulta.setInt(10, elObjeto.getPrecioPublicidad());
+            consulta.setInt(4, elObjeto.getPrecioTotal());
 
             cantidad = consulta.executeUpdate();
 
@@ -37,18 +29,18 @@ public class DaoAncheta extends Conexion implements Funcionalidad<Ancheta> {
             return cantidad > 0;
 
         } catch (SQLException ex) {
-            Logger.getLogger(DaoAncheta.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DaoProductoAncheta.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
     }
 
     @Override
-    public List<Ancheta> consultar(String orden) {
+    public List<ProductoAncheta> consultar(String orden) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Ancheta buscar(Integer llavePrimaria) {
+    public ProductoAncheta buscar(Integer llavePrimaria) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -58,7 +50,7 @@ public class DaoAncheta extends Conexion implements Funcionalidad<Ancheta> {
     }
 
     @Override
-    public Boolean actualizar(Ancheta elObjeto) {
+    public Boolean actualizar(ProductoAncheta elObjeto) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -68,7 +60,7 @@ public class DaoAncheta extends Conexion implements Funcionalidad<Ancheta> {
     }
 
     @Override
-    public List<Ancheta> buscarDato(String dato, String campo) {
+    public List<ProductoAncheta> buscarDato(String dato, String campo) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
