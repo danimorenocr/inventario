@@ -1,13 +1,14 @@
 package com.vainilla.fomularios;
 
+import com.vainilla.complementos.Apariencia;
 import com.vainilla.daos.DaoAncheta;
 import com.vainilla.daos.DaoCategoriaProducto;
 import com.vainilla.daos.DaoProducto;
 import com.vainilla.entidades.Ancheta;
 import com.vainilla.entidades.CategoriaProducto;
 import com.vainilla.entidades.Producto;
-import com.vainilla.entidades.ProductoAncheta;
-import com.vainilla.funciones.Funciones;
+import com.vainilla.complementos.Funciones;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,9 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     private Map<Integer, Integer> codigosCategoria = new HashMap<>();
 
     private DefaultComboBoxModel modeloComboCat = new DefaultComboBoxModel();
+
+    private ImageIcon addIcono = Apariencia.cargarImagen("add.png");
+    private ImageIcon borrarIcono = Apariencia.cargarImagen("borrar.png");
 
     private Integer codProducto = null;
     Integer columnaSeleccionada;
@@ -82,12 +86,9 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     }
 
     private void cargarDatosProducto(String ordencito) {
+
         List<Producto> arrayProd;
         DaoProducto miDao = new DaoProducto();
-
-        String nomAdd = "/com/vainilla/iconos/add.png";
-        String rutaIconAdd = this.getClass().getResource(nomAdd).getPath();
-        ImageIcon addIcono = new ImageIcon(rutaIconAdd);
 
         modeloTablaProducto.setNumRows(0);
 
@@ -111,6 +112,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         centrado.setHorizontalAlignment(JLabel.CENTER);
         tablaProductos.getColumnModel().getColumn(1).setCellRenderer(centrado);
         tablaProductos.getColumnModel().getColumn(3).setCellRenderer(centrado);
+
     }
 
     private void cargarCategoria() {
@@ -137,10 +139,6 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
 
         String nombreProduct, cantDigitadaTexto, precioUniTexto, precioCanastaTexto;
         Integer stock, precioUni, cantDigitada, stockResultante, precioTotal;
-
-        String nomAdd = "/com/vainilla/iconos/borrar.png";
-        String rutaIconAdd = this.getClass().getResource(nomAdd).getPath();
-        ImageIcon addIcono = new ImageIcon(rutaIconAdd);
 
         DefaultTableModel modelTablaProducto = (DefaultTableModel) tablaProductos.getModel();
         DefaultTableModel modelTablaCanasta = (DefaultTableModel) tablaCanasta.getModel();
@@ -200,7 +198,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
             modelTablaProducto.setValueAt("", filaSeleccionada, 3);
 
 //          AGREGAR LA IMAGEN A LA COLUMNA
-            datosFila[datosFila.length - 2] = addIcono;
+            datosFila[datosFila.length - 2] = borrarIcono;
 
             // Agregar datos a la segunda tabla 
             modelTablaCanasta.addRow(datosFila);
@@ -226,6 +224,14 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     }
 
     private void eliminarCanasta() {
+
+        if (!cajaBuscarProduct.getText().isEmpty()) {
+            
+        cajaBuscarProduct.setText("");
+        KeyEvent evento = new KeyEvent(cajaBuscarProduct, KeyEvent.KEY_RELEASED, System.currentTimeMillis(), 0, KeyEvent.VK_UNDEFINED, KeyEvent.CHAR_UNDEFINED);
+        cajaBuscarProduct.dispatchEvent(evento);
+        }
+
         int filaSeleccionadaCanasta = tablaCanasta.getSelectedRow();
         DefaultTableModel modelTablaCanasta = (DefaultTableModel) tablaCanasta.getModel();
         DefaultTableModel modelTablaProducto = (DefaultTableModel) tablaProductos.getModel();
@@ -255,8 +261,9 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                 cantProductosFinal = cantProductos - cantAgregada;
                 lblCantProductos.setText(cantProductosFinal + "");
 
-                precioTotal = precioCanasta - precioTotal;
-                lblValorCanasta.setText(Funciones.formatoNumero(precioTotal));
+                precioCanasta -= precioTotal;
+                System.out.println("precio: " + precioCanasta);
+                lblValorCanasta.setText(Funciones.formatoNumero(precioCanasta));
                 break;
 
             }
@@ -299,10 +306,6 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
 
         List<Producto> arrayProd;
         DaoProducto miDao = new DaoProducto();
-
-        String nomAdd = "/com/vainilla/iconos/add.png";
-        String rutaIconAdd = this.getClass().getResource(nomAdd).getPath();
-        ImageIcon addIcono = new ImageIcon(rutaIconAdd);
 
         modeloTablaProducto.setNumRows(0);
 
@@ -430,7 +433,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         // Puedes utilizar la misma lógica que tenías en tu código original
         // Por ejemplo:
         String nombre = rowData[0].toString();
-        
+
         System.out.println("nom: " + nombre);
 
         DaoProducto dao = new DaoProducto();
@@ -442,10 +445,8 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         System.out.println("cod: " + cod);
         Integer cantProduct = (Integer) rowData[1];
         Integer total = (Integer) rowData[2];
-        
+
 //        DaoAncheta
-        
-        
 //        ProductoAncheta objProdAncheta = new ProductoAncheta(codAncheta, codigoProducto, cantProduct, total);
         // Resto de los datos...
         // Realiza la inserción en la tabla de rompimiento...
@@ -765,6 +766,11 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         btnBorrar.setText("Borrar");
         btnBorrar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(65, 46, 152), 3, true));
         btnBorrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnBorrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBorrarActionPerformed(evt);
+            }
+        });
 
         panelProductos.setBackground(new java.awt.Color(255, 255, 255));
         panelProductos.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(65, 46, 152), 3, true));
@@ -877,7 +883,7 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
                 .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 444, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         lblTituloProd2.setFont(new java.awt.Font("Fredoka Medium", 0, 22)); // NOI18N
@@ -892,73 +898,66 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
         panelContenedor.setLayout(panelContenedorLayout);
         panelContenedorLayout.setHorizontalGroup(
             panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelContenedorLayout.createSequentialGroup()
-                .addGap(171, 171, 171)
-                .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(69, 69, 69)
-                .addComponent(lblTituloProd3, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cajaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(196, 196, 196)
-                .addComponent(chkPersonalizado)
-                .addGap(18, 18, 18)
-                .addComponent(cmbAnchetas, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(41, Short.MAX_VALUE))
-            .addGroup(panelContenedorLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelContenedorLayout.createSequentialGroup()
+                .addContainerGap(66, Short.MAX_VALUE)
+                .addComponent(panelProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addComponent(panelProductos1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelContenedorLayout.createSequentialGroup()
-                        .addGap(59, 59, 59)
-                        .addComponent(panelProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30)
-                        .addComponent(panelProductos1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(37, 37, 37)
+                        .addComponent(panelDescrip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelContenedorLayout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addComponent(lblTituloProd2, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(cajaBuscarProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelContenedorLayout.createSequentialGroup()
-                        .addComponent(panelDescrip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(42, 42, 42))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelContenedorLayout.createSequentialGroup()
+                        .addGap(88, 88, 88)
                         .addComponent(btnCrear, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(81, 81, 81)
-                        .addComponent(btnBorrar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(73, 73, 73))))
+                        .addComponent(btnBorrar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(54, 54, 54))
+            .addGroup(panelContenedorLayout.createSequentialGroup()
+                .addGap(112, 112, 112)
+                .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelContenedorLayout.createSequentialGroup()
+                        .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblTituloProd3, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cajaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(100, 100, 100)
+                        .addComponent(chkPersonalizado)
+                        .addGap(18, 18, 18)
+                        .addComponent(cmbAnchetas, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(122, 122, 122))
+                    .addGroup(panelContenedorLayout.createSequentialGroup()
+                        .addComponent(lblTituloProd2, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cajaBuscarProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         panelContenedorLayout.setVerticalGroup(
             panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelContenedorLayout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cajaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTituloProd3)
+                    .addComponent(chkPersonalizado)
+                    .addComponent(cmbAnchetas, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTitulo))
+                .addGap(10, 10, 10)
+                .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cajaBuscarProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTituloProd2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelContenedorLayout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addComponent(lblTitulo))
-                    .addGroup(panelContenedorLayout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(chkPersonalizado)
-                            .addComponent(cmbAnchetas, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cajaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblTituloProd3))))
-                .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelContenedorLayout.createSequentialGroup()
-                        .addGap(67, 67, 67)
                         .addComponent(panelDescrip, javax.swing.GroupLayout.PREFERRED_SIZE, 505, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(43, 43, 43)
+                        .addGap(18, 18, 18)
                         .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnCrear, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnBorrar, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(panelContenedorLayout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cajaBuscarProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblTituloProd2))
-                        .addGap(44, 44, 44)
-                        .addGroup(panelContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(panelProductos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(panelProductos1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(panelProductos1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panelProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panelCuerpoLayout = new javax.swing.GroupLayout(panelCuerpo);
@@ -967,15 +966,15 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
             panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCuerpoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panelContenedor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(panelContenedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelCuerpoLayout.setVerticalGroup(
             panelCuerpoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCuerpoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panelContenedor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(panelContenedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1011,7 +1010,6 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tablaCanastaMouseClicked
 
     private void cajaBuscarProductKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cajaBuscarProductKeyReleased
-
         buscarDato("%" + cajaBuscarProduct.getText().toUpperCase() + "%", "nombre_producto");
     }//GEN-LAST:event_cajaBuscarProductKeyReleased
 
@@ -1112,6 +1110,26 @@ public class FrmAncheta extends javax.swing.JInternalFrame {
 //            }
         }
     }//GEN-LAST:event_btnCrearActionPerformed
+
+    private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
+        cajaDomicilio.setText("");
+        cajaNombre.setText("");
+        cajaOtros.setText("");
+        cajaPublicidad.setText("");
+        cajaUtilidad.setText("");
+        lblValorCanasta.setText("0");
+        lblCantProductos.setText("0");
+        lblSubtotal.setText("0");
+        lblTotal.setText("0");
+        cargarDatosProducto("nombre_producto");
+
+        DefaultTableModel modeloTablaCanastas = (DefaultTableModel) tablaCanasta.getModel();
+        int filas = tablaCanasta.getRowCount();
+        System.out.println("fila: " + filas);
+        for (int i = filas - 1; i >= 0; i--) {
+            modeloTablaCanastas.removeRow(i);
+        }
+    }//GEN-LAST:event_btnBorrarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

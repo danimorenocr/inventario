@@ -6,7 +6,7 @@ import com.vainilla.daos.DaoProveedor;
 import com.vainilla.entidades.CategoriaProducto;
 import com.vainilla.entidades.Producto;
 import com.vainilla.entidades.Proveedor;
-import com.vainilla.funciones.Funciones;
+import com.vainilla.complementos.Funciones;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.WindowAdapter;
@@ -315,7 +315,6 @@ public class FrmProducto extends javax.swing.JInternalFrame {
             }
             cargarCostos();
         } catch (NumberFormatException e) {
-//            JOptionPane.showMessageDialog(panelCuerpo, "Ingresa datos validos", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
     }

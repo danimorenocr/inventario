@@ -45,9 +45,11 @@ public class Conexion {
             System.out.println("Conectado a MySql");
 
         } catch (ClassNotFoundException | SQLException ex) {
-            String mensajeError = "Error al conectar a la base de datos:\nPor favor, asegurese de que el servicio de MySQL esté activo\n";
+            String mensajeError = "Error al conectar a la base de datos:\nPor favor, asegurese de que el servicio de MySQL esté activo\n"
+                    + "ERROR: \n" + ex;
             JOptionPane.showMessageDialog(null, mensajeError, "Error de conexión", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("error: " + ex);
 
         }
     }

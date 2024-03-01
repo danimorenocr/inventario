@@ -6,7 +6,7 @@ import com.vainilla.daos.DaoProveedor;
 import com.vainilla.entidades.CategoriaProducto;
 import com.vainilla.entidades.Producto;
 import com.vainilla.entidades.Proveedor;
-import com.vainilla.funciones.Funciones;
+import com.vainilla.complementos.Funciones;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.WindowAdapter;
@@ -285,6 +285,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
             Integer stock = Integer.valueOf(cajaStock.getText());
             Integer precioFull = Integer.valueOf(Funciones.formatoNatural(cajaPrecioTotal.getText()));
             Integer precioXunidad = precioFull / stock;
+
             lblPrecioUnidad.setText(Funciones.formatoNumero(precioXunidad) + "");
             lblPrecioAcumulado.setText(Funciones.formatoNumero(precioXunidad) + "");
 
@@ -330,7 +331,7 @@ public class FrmProductoEditar extends javax.swing.JDialog {
     private void cargarCostos() {
         try {
 
-            Integer envio = Integer.valueOf(cajaEnvio.getText());
+            Integer envio = Integer.valueOf(Funciones.formatoNatural(cajaEnvio.getText()));
             Integer unidadesCompradas = Integer.valueOf(cajaTotalProductosEnvio.getText());
             Integer costoEnvioUnidadCaja = envio / unidadesCompradas;
             lblCostoEnvioUnidad.setText(Funciones.formatoNumero(costoEnvioUnidadCaja) + "");
